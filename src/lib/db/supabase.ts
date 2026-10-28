@@ -111,6 +111,8 @@ export function createSupabaseDb(): Db {
       return (rows as Row[]).map(toProduct);
     },
     async getProduct(code) {
+      // ilike treats % and _ as wildcards; product codes are [A-Z0-9-] only.
+      if (!/^[A-Za-z0-9-]{1,20}$/.test(code)) return null;
       const rows = check(await sb().from("products").select("*").ilike("code", code).limit(1));
       const row = (rows as Row[])[0];
       return row ? toProduct(row) : null;

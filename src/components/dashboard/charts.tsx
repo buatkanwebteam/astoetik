@@ -96,7 +96,7 @@ export function GroupBarChart({ data, colors }: { data: GroupSummary[]; colors?:
           <Bar yAxisId="er" dataKey="engagementRate" radius={[6, 6, 0, 0]} fill="#c8923b">
             {colors && data.map((d) => <Cell key={d.key} fill={colors[d.key] ?? "#c8923b"} />)}
           </Bar>
-          <Bar yAxisId="imp" dataKey="avgImpressions" radius={[6, 6, 0, 0]} fill="#6b3f1d" fillOpacity={0.55} />
+          <Bar yAxisId="imp" dataKey="avgImpressions" radius={[6, 6, 0, 0]} fill="#ae7646" fillOpacity={0.6} />
         </BarChart>
       </ResponsiveContainer>
     </div>

@@ -15,3 +15,8 @@ export async function loadWindow(filters: Filters) {
     posts: byPlatform(posts, filters.platform),
   };
 }
+
+/** ISO timestamp `days` days before now. */
+export function daysAgoIso(days: number): string {
+  return new Date(Date.now() - days * 864e5).toISOString();
+}

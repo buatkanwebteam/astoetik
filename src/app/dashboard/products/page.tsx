@@ -21,7 +21,7 @@ export default async function ProductsPage() {
     <div className="mx-auto max-w-7xl">
       <PageHeader title="Produk & QR" subtitle={`${products.length} produk inti. QR mengarah ke ${env.siteUrl}/p/<kode>?src=qr`}>
         <div className="flex flex-wrap gap-2">
-          <a href="/api/qr/all" className="inline-flex items-center gap-1.5 rounded-lg bg-tanah-600 px-3 py-2 text-xs font-semibold text-white dark:bg-emas dark:text-tanah-900">
+          <a href="/api/qr/all" download className="inline-flex items-center gap-1.5 rounded-lg bg-tanah-600 px-3 py-2 text-xs font-semibold text-white dark:bg-emas dark:text-tanah-900">
             <Archive className="size-4" aria-hidden /> Unduh semua QR (.zip)
           </a>
           <Link href="/dashboard/products/print" className="inline-flex items-center gap-1.5 rounded-lg bg-emas px-3 py-2 text-xs font-semibold text-tanah-900">

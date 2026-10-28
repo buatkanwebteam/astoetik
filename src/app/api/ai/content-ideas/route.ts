@@ -55,6 +55,14 @@ export async function POST(req: Request) {
     }
   }
 
+  // For the current month, only schedule from tomorrow (WIB) onwards.
+  const nowWib = new Date(Date.now() + 7 * 3600_000);
+  const daysInMonth = new Date(Date.UTC(year, mon, 0)).getUTCDate();
+  const isCurrentMonth = nowWib.getUTCFullYear() === year && nowWib.getUTCMonth() + 1 === mon;
+  const firstDay = isCurrentMonth ? Math.min(nowWib.getUTCDate() + 1, daysInMonth) : 1;
+  const span = daysInMonth - firstDay + 1;
+  const dayFor = (d: number) => (d >= firstDay ? d : firstDay + ((d - 1) % span));
+
   const codes = new Set(products.map((p) => p.code));
   const rows: ContentPlanInput[] = ideas.ideas
     .filter((i) => platforms.includes(i.platform))
@@ -65,7 +73,7 @@ export async function POST(req: Request) {
       caption: i.caption.slice(0, 2000),
       format: i.format,
       // Hours are WIB (UTC+7), independent of the server timezone.
-      scheduledAt: new Date(Date.UTC(year, mon - 1, i.dayOfMonth, i.hour - 7)).toISOString(),
+      scheduledAt: new Date(Date.UTC(year, mon - 1, dayFor(i.dayOfMonth), i.hour - 7)).toISOString(),
       status: "idea",
       productCode: i.productCode && codes.has(i.productCode) ? i.productCode : null,
       createdByAi: true,

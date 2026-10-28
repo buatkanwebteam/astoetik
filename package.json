@@ -1,12 +1,13 @@
 {
-  "name": "my-app",
+  "name": "astera-x",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:sql": "node --experimental-strip-types --no-warnings scripts/generate-seed.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.31.0",
