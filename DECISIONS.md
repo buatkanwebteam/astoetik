@@ -1,0 +1,27 @@
+# DECISIONS
+
+Log keputusan penting selama membangun prototype ASTERA-X.
+
+## Fondasi
+
+1. **Struktur `src/`.** Scaffold awal memakai `app/` di root. Dipindah ke `src/app` agar sesuai spesifikasi (`src/proxy.ts`). Alias `@/*` → `./src/*`.
+2. **Cache Components dimatikan** (`cacheComponents: false`). Next 16.4 men-scaffold dengan `cacheComponents: true`, yang mewajibkan setiap baca cookie/data request-time dibungkus `<Suspense>`. Hampir semua rute prototype ini dinamis (sesi, store JSON lokal, analitik live), jadi model caching lama (dinamis default saat memakai `cookies()`/`headers()`) lebih sederhana dan stabil. `partialPrefetching` ikut dihapus karena bergantung pada Cache Components.
+3. **`@supabase/ssr` tidak dipakai.** Semua akses Supabase terjadi di server dengan service role setelah sesi admin diverifikasi oleh `proxy.ts`. Login admin mode Supabase memverifikasi email/password via Supabase Auth (`signInWithPassword`), lalu aplikasi menerbitkan cookie sesi bertanda tangan sendiri (sama seperti mode demo). Satu mekanisme sesi untuk kedua mode, tanpa dependensi tambahan.
+4. **`xlsx` (SheetJS 0.18.5 dari npm)** memiliki advisory untuk *parsing* file. Aplikasi hanya *menulis* workbook, jadi risiko tidak relevan. Bisa diganti ke build CDN SheetJS bila perlu.
+5. **Folder `referensi/` di-gitignore** (PDF besar ±9 MB). Foto produk sudah diekstrak ke `public/products/`.
+
+## Data produk
+
+6. **Sumber kebenaran: "Data per Produk"** (Draft Website ASTERA-X.pdf). Konflik yang ditemukan dan diputuskan:
+   - Katalog Company Profile menulis daya kompor 170 W / 270 W dan canting portabel 8 W, 5–12 V DC. Diabaikan; dipakai 150/300/280 W dan 40 W, 220 V AC / 14 VDC dari Data per Produk.
+   - Manual A-SD002 menyebut "versi OTOMATIS" dan "tungku berbahan tanah liat". Bertentangan dengan Data per Produk (bodi Alumunium, kontrol Manual), jadi kalimat itu **tidak** dimasukkan ke konteks chatbot maupun FAQ.
+   - Manual K-CL001 melompati langkah 6 (nomor 5 → 7). Langkah dinomori ulang tanpa mengubah isi.
+7. **Nilai kosong (`-`) disembunyikan.** Spesifikasi disimpan sebagai array `{label, value}` hanya untuk nilai yang ada. Tidak ada tebakan.
+8. **Informasi dari manual yang tidak bertentangan** (kapasitas malam 20 gram K-CL001, malam maks ±250 gr pada wajan, isi kardus, saklar ON/OFF A-SD002) dipakai di FAQ `source: manual` dan konteks chatbot.
+9. **Link marketplace.** Tidak ada URL toko resmi di dokumen sumber. Tombol "Beli di Marketplace" mengarah ke halaman *pencarian* Shopee/Tokopedia dengan kata kunci `astoetik <kode>`. Ganti di `src/data/products.ts` (atau kolom `marketplace_links` di Supabase) begitu URL toko resmi tersedia.
+10. **Foto produk.** Diekstrak dari Draft Website PDF (`pdfimages`), dipetakan per produk berdasarkan label pada foto. Foto utama = foto produk tanpa kardus; sisanya galeri (`<kode>-2.jpg`, dst.).
+11. **FAQ generik** untuk 12 produk tanpa manual dibangun otomatis dari data spesifikasi + saran keselamatan listrik umum, ditandai `faq_source: "generated"` dan label "FAQ umum".
+
+## Data dummy
+
+12. **Generator deterministik** (mulberry32, seed tetap) di `src/data/dummy.ts`. Tanggal di-*anchor* ke hari ini (mode lokal) supaya dashboard selalu menampilkan 90 hari terakhir. Dua lonjakan: hari ke-35 (tutorial viral) dan ke-70 (promo). Funnel dijamin menurun.

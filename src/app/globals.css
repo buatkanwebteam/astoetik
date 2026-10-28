@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* Dark mode is opt-in per page (dashboard) via data-theme on <html>. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --color-tanah-50: #faf3ec;
+  --color-tanah-100: #f1e2d1;
+  --color-tanah-200: #e2c4a3;
+  --color-tanah-300: #cd9e72;
+  --color-tanah-400: #ae7646;
+  --color-tanah-500: #8c5a2f;
+  --color-tanah-600: #6b3f1d;
+  --color-tanah-700: #57321a;
+  --color-tanah-800: #3e2414;
+  --color-tanah-900: #2a190e;
+  --color-krem: #fbf6ee;
+  --color-emas: #c8923b;
+  --color-emas-soft: #f3e2c2;
+  --color-ink: #2b1d12;
+  --color-ink-soft: #5c4a3b;
+
+  --color-tiktok: #0f9e99;
+  --color-instagram: #c2338a;
+  --color-shopee: #e8590c;
+  --color-youtube: #c92a2a;
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-krem);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-emas);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Kawung-inspired batik motif, drawn as an inline SVG tile. */
+.batik-pattern {
+  background-color: var(--color-tanah-600);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23c8923b' stroke-opacity='0.28' stroke-width='1.2'%3E%3Cellipse cx='24' cy='12' rx='6' ry='10'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='10'/%3E%3Cellipse cx='12' cy='24' rx='10' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='10' ry='6'/%3E%3Ccircle cx='24' cy='24' r='1.6' fill='%23c8923b' fill-opacity='0.4'/%3E%3Ccircle cx='0' cy='0' r='3'/%3E%3Ccircle cx='48' cy='0' r='3'/%3E%3Ccircle cx='0' cy='48' r='3'/%3E%3Ccircle cx='48' cy='48' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 48px 48px;
+}
+
+.batik-pattern-light {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%236b3f1d' stroke-opacity='0.08' stroke-width='1.2'%3E%3Cellipse cx='24' cy='12' rx='6' ry='10'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='10'/%3E%3Cellipse cx='12' cy='24' rx='10' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='10' ry='6'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 48px 48px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}

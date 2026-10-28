@@ -1,12 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   experimental: {
     agentFeedback: true,
   },
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Cache Components disabled: almost every route in this prototype is
+  // request-time (session, local JSON store, live analytics). See DECISIONS.md.
+  cacheComponents: false,
   turbopack: {
     rules: {
       "*.css": {
