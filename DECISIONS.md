@@ -25,3 +25,10 @@ Log keputusan penting selama membangun prototype ASTERA-X.
 ## Data dummy
 
 12. **Generator deterministik** (mulberry32, seed tetap) di `src/data/dummy.ts`. Tanggal di-*anchor* ke hari ini (mode lokal) supaya dashboard selalu menampilkan 90 hari terakhir. Dua lonjakan: hari ke-35 (tutorial viral) dan ke-70 (promo). Funnel dijamin menurun.
+
+## Auth
+
+13. **Sesi admin = cookie HMAC-SHA256 bertanda tangan** (`astera_session`, httpOnly, 7 hari) dibuat dengan Web Crypto agar bisa diverifikasi di `proxy.ts` maupun server. Tanpa `SESSION_SECRET`, dipakai secret fallback agar mode demo jalan; **wajib** diisi di produksi.
+14. **Proteksi berlapis.** `proxy.ts` memblokir `/dashboard/**`, `/api/ai/**`, `/api/export/**`, `/api/content-plans/**`, `/api/qr/**`. Layout dashboard dan setiap route handler admin memeriksa ulang sesi (proxy hanya *optimistic check* menurut docs Next).
+15. **Login dirate-limit** 10 percobaan / 10 menit per IP. Parameter `next` hanya menerima path `/dashboard…` (cegah open redirect).
+16. **Dark mode hanya untuk dashboard**, via atribut `data-theme` di `<html>` + `@custom-variant dark`. Halaman publik tidak memakai varian `dark:`.
