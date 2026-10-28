@@ -41,3 +41,8 @@ Log keputusan penting selama membangun prototype ASTERA-X.
 20. **Mock AI deterministik** (`src/lib/ai/mock-*.ts`) dipakai bila `GEMINI_API_KEY` kosong, membaca input yang sama dengan prompt asli sehingga UI tetap realistis. UI menampilkan badge "Mode Demo".
 21. **Structured output**: `responseMimeType: application/json` + `responseJsonSchema` dari `z.toJSONSchema`, divalidasi zod, retry 1×, lalu pesan error ramah (HTTP 502).
 22. **Kalender konten dirender di klien saja** (setelah mount) karena jam tampil bergantung zona waktu peramban; mencegah hydration mismatch.
+
+## QR & Export
+
+23. **QR berisi `NEXT_PUBLIC_SITE_URL/p/<kode>?src=qr`**, warna coklat gelap di atas putih (kontras tinggi agar mudah dipindai), level koreksi M. Dashboard memberi peringatan bila `NEXT_PUBLIC_SITE_URL` masih localhost. Unduhan tunggal (PNG 768 px), semua (.zip berisi PNG + `daftar-qr.csv`), dan halaman cetak label 6 × 8 cm (QR SVG agar tajam saat dicetak).
+24. **Export .xlsx**: satu workbook per dataset (`metrics`, `posts`, `funnel`, `insights`, `content`) atau semuanya (`all`). Tiap sheet punya baris judul (lingkup + label DATA DUMMY), header, autofilter, lebar kolom, format angka `#,##0` / `0.00%` / tanggal. Tanggal ditulis sebagai serial Excel dari komponen UTC yang sudah digeser ke WIB, karena konversi `Date` bawaan SheetJS bergantung pada zona waktu server.
