@@ -9,7 +9,12 @@ export const formatPercent = (ratio: number, digits = 1) =>
   `${(Number.isFinite(ratio) ? ratio * 100 : 0).toLocaleString("id-ID", { maximumFractionDigits: digits, minimumFractionDigits: digits })}%`;
 
 export function formatDate(iso: string, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" }) {
-  return new Date(iso).toLocaleDateString("id-ID", opts);
+  // Fixed timezone so server and client render the same string.
+  return new Date(iso).toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", ...opts });
+}
+
+export function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Jakarta", dateStyle: "medium", timeStyle: "short" });
 }
 
 export function waLink(number: string, text: string) {

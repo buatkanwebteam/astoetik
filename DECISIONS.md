@@ -32,3 +32,12 @@ Log keputusan penting selama membangun prototype ASTERA-X.
 14. **Proteksi berlapis.** `proxy.ts` memblokir `/dashboard/**`, `/api/ai/**`, `/api/export/**`, `/api/content-plans/**`, `/api/qr/**`. Layout dashboard dan setiap route handler admin memeriksa ulang sesi (proxy hanya *optimistic check* menurut docs Next).
 15. **Login dirate-limit** 10 percobaan / 10 menit per IP. Parameter `next` hanya menerima path `/dashboard…` (cegah open redirect).
 16. **Dark mode hanya untuk dashboard**, via atribut `data-theme` di `<html>` + `@custom-variant dark`. Halaman publik tidak memakai varian `dark:`.
+
+## AI
+
+17. **Advisor** hanya menerima *snapshot agregat* (`advisorSnapshot`): total, funnel, rasio per platform, ringkasan per format, 3 judul konten teratas. Tidak ada baris mentah.
+18. **Insights**: model mengembalikan `messageIndexes` per topik, dan jumlah per topik **dihitung server** dari indeks itu (bukan angka karangan model). Tiap pesan hanya masuk satu topik, lalu topik ditulis balik ke `chat_messages.topic`. Laporan terakhir disimpan di tabel tambahan `insight_reports`.
+19. **Content ideas** dijadwalkan dalam jam WIB (UTC+7) terlepas dari zona waktu server. Ide masuk sebagai `status = idea`, `created_by_ai = true`.
+20. **Mock AI deterministik** (`src/lib/ai/mock-*.ts`) dipakai bila `GEMINI_API_KEY` kosong, membaca input yang sama dengan prompt asli sehingga UI tetap realistis. UI menampilkan badge "Mode Demo".
+21. **Structured output**: `responseMimeType: application/json` + `responseJsonSchema` dari `z.toJSONSchema`, divalidasi zod, retry 1×, lalu pesan error ramah (HTTP 502).
+22. **Kalender konten dirender di klien saja** (setelah mount) karena jam tampil bergantung zona waktu peramban; mencegah hydration mismatch.
