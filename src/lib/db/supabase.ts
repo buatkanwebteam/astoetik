@@ -8,6 +8,7 @@ import type {
   InsightReport,
   Product,
   ProductFaq,
+  ProductUnit,
   SocialMetric,
   SocialPost,
   TrackEvent,
@@ -37,6 +38,51 @@ function toProduct(r: Row): Product {
     gallery: (r.gallery as string[] | null) ?? [image],
     marketplaceLinks: (r.marketplace_links as Product["marketplaceLinks"]) ?? {},
     note: (r.note as string | null) ?? null,
+  };
+}
+
+function fromProduct(p: Product): Row {
+  return {
+    code: p.code,
+    name: p.name,
+    category: p.category,
+    price: p.price,
+    specs: p.specs,
+    tkdn: p.tkdn,
+    sni: p.sni,
+    image: p.image,
+    gallery: p.gallery,
+    marketplace_links: p.marketplaceLinks,
+    note: p.note,
+  };
+}
+
+function toUnit(r: Row): ProductUnit {
+  return {
+    productCode: str(r.product_code),
+    serial: str(r.serial),
+    productionCode: str(r.production_code),
+    productionDate: str(r.production_date),
+    warrantyMonths: num(r.warranty_months),
+    qcStatus: str(r.qc_status) as ProductUnit["qcStatus"],
+    qcDate: (r.qc_date as string | null) ?? null,
+    qcInspector: (r.qc_inspector as string | null) ?? null,
+    note: (r.note as string | null) ?? null,
+    createdAt: str(r.created_at),
+  };
+}
+
+function fromUnit(u: ProductUnit): Row {
+  return {
+    product_code: u.productCode,
+    serial: u.serial,
+    production_code: u.productionCode,
+    production_date: u.productionDate,
+    warranty_months: u.warrantyMonths,
+    qc_status: u.qcStatus,
+    qc_date: u.qcDate,
+    qc_inspector: u.qcInspector,
+    note: u.note,
   };
 }
 
@@ -116,6 +162,50 @@ export function createSupabaseDb(): Db {
       const rows = check(await sb().from("products").select("*").ilike("code", code).limit(1));
       const row = (rows as Row[])[0];
       return row ? toProduct(row) : null;
+    },
+    async createProduct(product) {
+      const res = await sb().from("products").insert(fromProduct(product));
+      if (res.error?.code === "23505") return false; // unique_violation: code taken
+      check(res);
+      return true;
+    },
+    async updateProduct(product) {
+      const { code, ...rest } = fromProduct(product);
+      const rows = check(await sb().from("products").update(rest).eq("code", code).select("code"));
+      return (rows as Row[]).length > 0;
+    },
+    async deleteProduct(code) {
+      // FAQs, chat sessions and events cascade (see schema.sql).
+      check(await sb().from("products").delete().eq("code", code));
+    },
+    async listUnits(productCode) {
+      const rows = check(await sb().from("product_units").select("*").eq("product_code", productCode).order("serial"));
+      return (rows as Row[]).map(toUnit);
+    },
+    async getUnit(productCode, serial) {
+      // Serials are [A-Z0-9-] only (checked in schema), so ilike has no wildcards to worry about.
+      if (!/^[A-Za-z0-9-]{1,20}$/.test(serial)) return null;
+      const rows = check(
+        await sb().from("product_units").select("*").eq("product_code", productCode).ilike("serial", serial).limit(1),
+      );
+      const row = (rows as Row[])[0];
+      return row ? toUnit(row) : null;
+    },
+    async createUnit(unit) {
+      const res = await sb().from("product_units").insert(fromUnit(unit));
+      if (res.error?.code === "23505") return false; // unique_violation: serial taken
+      check(res);
+      return true;
+    },
+    async updateUnit(unit) {
+      const { product_code, serial, ...rest } = fromUnit(unit);
+      const rows = check(
+        await sb().from("product_units").update(rest).eq("product_code", product_code).eq("serial", serial).select("serial"),
+      );
+      return (rows as Row[]).length > 0;
+    },
+    async deleteUnit(productCode, serial) {
+      check(await sb().from("product_units").delete().eq("product_code", productCode).eq("serial", serial));
     },
     async listFaqs(productCode) {
       const rows = check(await sb().from("product_faqs").select("*").eq("product_code", productCode).order("id"));

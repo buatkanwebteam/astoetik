@@ -80,7 +80,7 @@ Key hanya dipakai di server (route handler); tidak pernah dikirim ke browser.
    - `SESSION_SECRET` = string acak panjang.
    - Kredensial Supabase dan Gemini.
 4. Deploy. Setelah domain final diketahui, pastikan `NEXT_PUBLIC_SITE_URL` sudah benar, lalu **Redeploy** (variabel `NEXT_PUBLIC_*` dibaca saat build).
-5. Buka `/dashboard/products` → unduh QR / cetak label. Pindai dengan kamera HP: harus membuka `https://<domain>/p/<kode>?src=qr`.
+5. Buka `/dashboard/products` (Katalog Produk) → tambah/edit produk, unduh QR / cetak label. Pindai dengan kamera HP: harus membuka `https://<domain>/p/<kode>?src=qr`.
 
 Atau lewat CLI: `npm i -g vercel`, `vercel link`, `vercel env add <NAMA>`, `vercel --prod`.
 
@@ -92,14 +92,16 @@ Atau lewat CLI: `npm i -g vercel`, `vercel link`, `vercel env add <NAMA>`, `verc
 src/
   app/
     page.tsx                  landing
-    p/[kode]/                 halaman produk publik (+ 404 ramah)
+    p/[kode]/                 halaman umum jenis produk (+ 404 ramah)
+    p/[kode]/[seri]/          halaman satu unit: data jenis + kode produksi, garansi, QC
     login/                    login admin (server action)
-    dashboard/                ringkasan, content, insights, products (+ print)
+    dashboard/                ringkasan, content, insights, products = Katalog Produk, products/[kode] = unit (+ print)
     api/chat                  chatbot produk (streaming)
     api/track                 event qr_scan, page_view, chat_open, marketplace_click
     api/ai/*                  advisor, content-ideas, insights (admin)
     api/content-plans/*       CRUD kalender konten (admin)
     api/qr/[kode], api/qr/all QR PNG / zip (admin)
+    api/products/*            tambah / edit / hapus produk dan unitnya (admin)
     api/export/[dataset]      .xlsx: metrics | posts | funnel | insights | content | all
   proxy.ts                    proteksi /dashboard dan API admin
   data/                       seed produk, FAQ, potongan manual, generator data dummy

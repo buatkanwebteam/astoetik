@@ -29,7 +29,7 @@ export function BuyButtons({
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => track(productCode, "marketplace_click", { marketplace: key })}
-              className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 ${
+              className={`flex items-center justify-center gap-2 rounded-sm px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110 ${
                 key === "shopee" ? "bg-[#c2410c]" : "bg-[#237032]"
               }`}
             >
@@ -43,7 +43,7 @@ export function BuyButtons({
         href={waHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 rounded-xl border-2 border-tanah-600 bg-white px-4 py-3 text-sm font-semibold text-tanah-700 transition hover:bg-tanah-50"
+        className="flex items-center justify-center gap-2 rounded-sm border border-aksen-deep px-4 py-3 text-sm font-semibold text-aksen-text transition-colors duration-150 hover:bg-kat-raised"
       >
         <MessageCircle className="size-4" aria-hidden />
         Tanya CS via WhatsApp

@@ -5,6 +5,7 @@ import type {
   InsightReport,
   Product,
   ProductFaq,
+  ProductUnit,
   SocialMetric,
   SocialPost,
   TrackEvent,
@@ -19,7 +20,20 @@ export interface Db {
 
   listProducts(): Promise<Product[]>;
   getProduct(code: string): Promise<Product | null>;
+  /** Returns false when the code is already taken. */
+  createProduct(product: Product): Promise<boolean>;
+  /** Returns false when no product has this code. */
+  updateProduct(product: Product): Promise<boolean>;
+  deleteProduct(code: string): Promise<void>;
   listFaqs(productCode: string): Promise<ProductFaq[]>;
+
+  listUnits(productCode: string): Promise<ProductUnit[]>;
+  getUnit(productCode: string, serial: string): Promise<ProductUnit | null>;
+  /** Returns false when the serial is already used for this product. */
+  createUnit(unit: ProductUnit): Promise<boolean>;
+  /** Returns false when the unit does not exist. */
+  updateUnit(unit: ProductUnit): Promise<boolean>;
+  deleteUnit(productCode: string, serial: string): Promise<void>;
 
   ensureChatSession(sessionId: string, productCode: string): Promise<void>;
   addChatMessage(msg: NewChatMessage): Promise<ChatMessage>;

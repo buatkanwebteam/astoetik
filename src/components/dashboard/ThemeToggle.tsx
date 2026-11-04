@@ -1,7 +1,7 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 const KEY = "astera-theme";
 
@@ -40,4 +40,32 @@ export function ThemeToggle() {
 }
 
 /** Inline script applied before paint to avoid a light flash. */
-export const THEME_BOOT_SCRIPT = `try{document.documentElement.dataset.theme=localStorage.getItem("${KEY}")||"light"}catch(e){}`;
+const THEME_BOOT_SCRIPT = `try{document.documentElement.dataset.theme=localStorage.getItem("${KEY}")||"light"}catch(e){}`;
+
+/**
+ * Hard loads: the inline script sets the theme before first paint.
+ * Client-side navigations never execute inserted scripts, so the effect applies
+ * the theme on the way in and clears it on the way out (dark mode is dashboard-only).
+ * The script is typed text/plain on the client so React does not warn about it
+ * (pattern from Next docs: preventing-flash-before-hydration).
+ */
+export function ThemeBoot() {
+  useEffect(() => {
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem(KEY) || "light";
+    } catch {
+      // ignore
+    }
+    return () => {
+      delete document.documentElement.dataset.theme;
+    };
+  }, []);
+
+  return (
+    <script
+      type={typeof window === "undefined" ? "text/javascript" : "text/plain"}
+      suppressHydrationWarning
+      dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }}
+    />
+  );
+}

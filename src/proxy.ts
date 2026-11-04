@@ -23,5 +23,6 @@ export const config = {
     "/api/export/:path*",
     "/api/content-plans/:path*",
     "/api/qr/:path*",
+    "/api/products/:path*",
   ],
 };

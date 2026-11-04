@@ -9,7 +9,7 @@ const NAV = [
   { href: "/dashboard", label: "Ringkasan", icon: LayoutDashboard },
   { href: "/dashboard/content", label: "Content Planner", icon: CalendarDays },
   { href: "/dashboard/insights", label: "Insight Pelanggan", icon: MessagesSquare },
-  { href: "/dashboard/products", label: "Produk & QR", icon: QrCode },
+  { href: "/dashboard/products", label: "Katalog Produk", icon: QrCode },
 ];
 
 export function Sidebar() {

@@ -8,6 +8,7 @@ register("./ts-resolve.mjs", pathToFileURL(fileURLToPath(import.meta.url)));
 
 const { PRODUCTS } = await import("../src/data/products.ts");
 const { PRODUCT_FAQS } = await import("../src/data/faqs.ts");
+const { SAMPLE_UNITS } = await import("../src/data/units.ts");
 const { generateSocialMetrics, generateSocialPosts } = await import("../src/data/dummy.ts");
 
 const q = (v) => (v === null || v === undefined ? "null" : `'${String(v).replace(/'/g, "''")}'`);
@@ -37,6 +38,12 @@ const out = [
     ["id", "product_code", "question", "answer", "source"],
     PRODUCT_FAQS.map((f) => [q(f.id), q(f.productCode), q(f.question), q(f.answer), q(f.source)]),
   ),
+  "-- DATA CONTOH: product units (placeholder production codes, dates and QC officers)",
+  insert(
+    "product_units",
+    ["product_code", "serial", "production_code", "production_date", "warranty_months", "qc_status", "qc_date", "qc_inspector", "note", "created_at"],
+    SAMPLE_UNITS.map((u) => [q(u.productCode), q(u.serial), q(u.productionCode), q(u.productionDate), u.warrantyMonths, q(u.qcStatus), q(u.qcDate), q(u.qcInspector), q(u.note), q(u.createdAt)]),
+  ),
   "-- DATA DUMMY: social analytics",
   insert(
     "social_metrics",
@@ -54,4 +61,4 @@ const out = [
 
 const target = new URL("../supabase/seed.sql", import.meta.url);
 writeFileSync(target, out.join("\n"));
-console.log(`Wrote ${fileURLToPath(target)}: ${PRODUCTS.length} products, ${PRODUCT_FAQS.length} FAQs`);
+console.log(`Wrote ${fileURLToPath(target)}: ${PRODUCTS.length} products, ${PRODUCT_FAQS.length} FAQs, ${SAMPLE_UNITS.length} sample units`);

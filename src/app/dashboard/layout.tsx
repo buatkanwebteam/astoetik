@@ -3,7 +3,7 @@ import { LogOut } from "lucide-react";
 import { requireSession } from "@/lib/auth/session";
 import { isGeminiEnabled, isSupabaseEnabled } from "@/lib/env";
 import { Sidebar } from "@/components/dashboard/Sidebar";
-import { THEME_BOOT_SCRIPT, ThemeToggle } from "@/components/dashboard/ThemeToggle";
+import { ThemeBoot, ThemeToggle } from "@/components/dashboard/ThemeToggle";
 import { logout } from "@/app/login/actions";
 
 export const metadata: Metadata = { title: { default: "Dashboard", template: "%s · Dashboard ASTERA-X" } };
@@ -13,7 +13,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
 
   return (
     <div className="flex min-h-dvh flex-1 bg-krem text-ink dark:bg-[#1b130d] dark:text-krem">
-      <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      <ThemeBoot />
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="no-print sticky top-0 z-30 flex items-center justify-end gap-2 border-b border-tanah-900/10 bg-krem/90 px-4 py-2.5 pl-16 backdrop-blur lg:pl-6 dark:border-white/10 dark:bg-[#1b130d]/90">

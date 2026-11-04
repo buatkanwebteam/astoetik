@@ -4,7 +4,7 @@
 
 
 drop table if exists insight_reports, social_posts, social_metrics, content_plans, events,
-  chat_messages, chat_sessions, product_faqs, products cascade;
+  chat_messages, chat_sessions, product_units, product_faqs, products cascade;
 
 -- Public catalogue ---------------------------------------------------------
 
@@ -30,6 +30,21 @@ create table product_faqs (
   source       text not null check (source in ('manual', 'generated'))
 );
 create index product_faqs_product_idx on product_faqs (product_code);
+
+-- One row per physical unit. Its QR opens /p/<product_code>/<serial>.
+create table product_units (
+  product_code    text not null references products (code) on delete cascade,
+  serial          text not null check (serial ~ '^[A-Z0-9-]{1,20}$'),
+  production_code text not null,
+  production_date date not null,
+  warranty_months integer not null default 0 check (warranty_months between 0 and 120),
+  qc_status       text not null check (qc_status in ('lulus', 'menunggu', 'tidak-lulus')),
+  qc_date         date,
+  qc_inspector    text,
+  note            text,
+  created_at      timestamptz not null default now(),
+  primary key (product_code, serial)
+);
 
 -- Chatbot & tracking (written only by route handlers with the service role) --
 
@@ -117,6 +132,7 @@ create table insight_reports (
 
 alter table products        enable row level security;
 alter table product_faqs    enable row level security;
+alter table product_units   enable row level security;
 alter table chat_sessions   enable row level security;
 alter table chat_messages   enable row level security;
 alter table events          enable row level security;
@@ -128,6 +144,8 @@ alter table insight_reports enable row level security;
 -- Public content: readable by everyone.
 create policy "public read products" on products for select to anon, authenticated using (true);
 create policy "public read faqs" on product_faqs for select to anon, authenticated using (true);
+-- Units (incl. QC inspector) are served only through the app's server; no anon access.
+create policy "admin all product units" on product_units for all to authenticated using (true) with check (true);
 
 -- chat_* and events: no anon policies, so anon can neither read nor write.
 -- Writes happen only through /api/chat and /api/track (service role).

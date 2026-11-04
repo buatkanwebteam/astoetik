@@ -25,6 +25,26 @@ export interface Product {
   note: string | null;
 }
 
+export type QcStatus = "lulus" | "menunggu" | "tidak-lulus";
+
+/** One physical unit of a product type. Its QR opens /p/<productCode>/<serial>. */
+export interface ProductUnit {
+  productCode: string;
+  /** Unique within the product type; part of the URL printed in the QR. */
+  serial: string;
+  productionCode: string;
+  /** YYYY-MM-DD */
+  productionDate: string;
+  /** Counted from productionDate (purchase date is unknown to the system). */
+  warrantyMonths: number;
+  qcStatus: QcStatus;
+  /** YYYY-MM-DD */
+  qcDate: string | null;
+  qcInspector: string | null;
+  note: string | null;
+  createdAt: string;
+}
+
 export type FaqSource = "manual" | "generated";
 
 export interface ProductFaq {

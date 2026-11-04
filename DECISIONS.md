@@ -46,3 +46,24 @@ Log keputusan penting selama membangun prototype ASTERA-X.
 
 23. **QR berisi `NEXT_PUBLIC_SITE_URL/p/<kode>?src=qr`**, warna coklat gelap di atas putih (kontras tinggi agar mudah dipindai), level koreksi M. Dashboard memberi peringatan bila `NEXT_PUBLIC_SITE_URL` masih localhost. Unduhan tunggal (PNG 768 px), semua (.zip berisi PNG + `daftar-qr.csv`), dan halaman cetak label 6 × 8 cm (QR SVG agar tajam saat dicetak).
 24. **Export .xlsx**: satu workbook per dataset (`metrics`, `posts`, `funnel`, `insights`, `content`) atau semuanya (`all`). Tiap sheet punya baris judul (lingkup + label DATA DUMMY), header, autofilter, lebar kolom, format angka `#,##0` / `0.00%` / tanggal. Tanggal ditulis sebagai serial Excel dari komponen UTC yang sudah digeser ke WIB, karena konversi `Date` bawaan SheetJS bergantung pada zona waktu server.
+
+## Katalog Produk (database admin)
+
+25. **Katalog Produk = database admin**, bukan toko. Tinggal di `/dashboard/products` (wajib login): cari, filter (kategori, kontrol panas, bahan, daya, harga, sertifikasi), urutkan, tampilan kartu/tabel, unduh QR, buka halaman publik, serta tambah/edit/hapus produk. Pengunjung hanya melihat produk lewat scan QR (`/p/<kode>`). Tidak ada keranjang, wishlist, atau checkout.
+26. **Facet filter diturunkan dari spesifikasi nyata** (`src/lib/catalog.ts`): label `Bahan Bodi`/`Bahan Bodi Canting`, `Daya`/`Daya Maks`, `Kontrol Panas`/`Pengaturan`. Stok, diskon, dan tanggal rilis tidak ada di sumber, jadi tidak ditampilkan.
+27. **Kode produk tidak bisa diubah** setelah dibuat karena tercetak di QR. Menghapus produk membuat QR lamanya menampilkan halaman 404 ramah.
+28. **Foto unggahan disimpan sebagai data URL JPEG** (diperkecil di browser ke maks. 1200 px) di kolom `image`. Tidak butuh storage tambahan dan jalan di mode lokal maupun Supabase. Untuk skala besar, pindahkan ke Supabase Storage. Foto baru menggantikan foto utama; foto galeri lain tetap.
+29. **TKDN tidak diinput dari dashboard.** Nilai TKDN yang sudah ada di seed tetap dipertahankan saat produk diedit; produk baru tanpa TKDN.
+30. **Mode lokal memuat ulang `store.json` bila file berubah** (cek `mtime`). Next membundel route handler dan page terpisah, sehingga cache memori satu bundle tidak tahu perubahan dari bundle lain.
+31. **Token warna `kat-*`/`aksen`** (putih + coklat tanah) dipakai katalog dan halaman QR. Di dashboard mode gelap, token yang sama diganti nilainya lewat `:root[data-theme="dark"]`, jadi komponen tidak perlu varian `dark:`.
+
+## Unit produk (QR per unit fisik)
+
+32. **Dua level QR.** `/p/<kode>` = halaman umum jenis produk (tetap ada, mis. untuk brosur/kemasan). `/p/<kode>/<seri>` = satu unit fisik: isi halaman umum ditambah kartu "Data unit ini". Komponen halaman dipakai bersama (`ProductView`).
+33. **Data unit**: nomor seri (bagian URL, unik per jenis, tidak bisa diubah), kode produksi, tanggal produksi, garansi (bulan), status/tanggal/petugas QC, catatan. Disimpan di `product_units` (PK `product_code, serial`, cascade saat produk dihapus).
+34. **Garansi dihitung dari tanggal produksi**, karena tanggal pembelian tidak diketahui sistem. Status aktif/berakhir dihitung per hari WIB. Penambahan bulan yang melewati akhir bulan dijepit ke hari terakhir bulan itu (31 Jan + 1 bln = 28 Feb).
+35. **Unit diinput satu per satu** di `/dashboard/products/<kode>`. Form unit baru mengusulkan seri berikutnya (0001, 0002, …) dan menyalin kode produksi, garansi, dan petugas QC dari unit terakhir.
+36. **Halaman unit `noindex`** karena memuat nama petugas QC dan data garansi per unit. Tabel `product_units` tidak punya policy `anon`; data dibaca lewat server (service role).
+37. **Event analitik tetap per jenis produk**; halaman unit menambahkan `meta.serial` pada `page_view`/`qr_scan`. Chatbot tetap konteks jenis produk (belum tahu data unit).
+38. **Cetak label**: `/dashboard/products/print` = label per jenis; `?kode=<kode>` = label per unit produk itu.
+39. **Unit contoh untuk semua produk** (`src/data/units.ts`): 3 unit per produk (seri 0001–0003, total 45). Kode produksi `PRD-YYMM-NN`, tanggal tetap, petugas QC berupa kode netral (`QC-01`…), dan setiap unit bercatatan "Data contoh untuk demo." Variasi disengaja: tiap produk ke-5 punya unit 0001 dengan garansi sudah berakhir, sebagian unit 0003 berstatus QC menunggu. Mode lokal memakai seed ini sampai admin mengubah unit; `seed.sql` ikut memuatnya. Hapus/ganti dengan data produksi asli sebelum dipakai nyata.

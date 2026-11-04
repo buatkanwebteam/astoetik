@@ -1,20 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const instrument = Instrument_Sans({
+  variable: "--font-instrument",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: { default: "ASTERA-X · Astoetik Indonesia", template: "%s · ASTERA-X" },
-  description: "Scan QR produk Astoetik dan dashboard analitik pemasaran CV. Astoetik Indonesia.",
+  title: { default: "Astoetik Indonesia", template: "%s · ASTERA-X" },
+  description: "CV. Astoetik Indonesia.",
 };
 
 export const viewport: Viewport = {
@@ -23,7 +25,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id" className={`${fraunces.variable} ${inter.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="id" className={`${bricolage.variable} ${instrument.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

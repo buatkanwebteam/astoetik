@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, Send, Sparkles } from "lucide-react";
+import { Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { track } from "./track";
 
@@ -28,12 +28,10 @@ export function ProductChat({
   productCode,
   productName,
   suggestions,
-  demo,
 }: {
   productCode: string;
   productName: string;
   suggestions: string[];
-  demo: boolean;
 }) {
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: `Halo! Saya asisten ${productName}. Mau tanya spesifikasi, cara pakai, atau perawatan?` },
@@ -92,30 +90,22 @@ export function ProductChat({
   }
 
   return (
-    <section aria-labelledby="chat-title" className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-tanah-900/10">
-      <header className="flex items-center justify-between gap-2 bg-tanah-600 px-4 py-3 text-krem">
-        <div className="flex items-center gap-2">
-          <Bot className="size-5 text-emas" aria-hidden />
-          <h2 id="chat-title" className="font-display text-lg">
-            Tanya Asisten
-          </h2>
-        </div>
-        {demo && (
-          <span className="rounded-full bg-emas px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-tanah-900">
-            Mode Demo
-          </span>
-        )}
+    <section aria-labelledby="chat-title" className="overflow-hidden rounded-md border border-kat-line bg-kat-card">
+      <header className="border-b border-kat-line bg-kat-raised px-4 py-3">
+        <h2 id="chat-title" className="font-grotesk text-lg font-semibold text-kat-text">
+          Tanya Asisten
+        </h2>
       </header>
 
       <div ref={listRef} className="max-h-96 min-h-48 space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <p
-              className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
-                m.role === "user" ? "rounded-br-sm bg-tanah-600 text-white" : "rounded-bl-sm bg-tanah-50 text-ink"
+              className={`max-w-[85%] whitespace-pre-wrap rounded-md px-3.5 py-2 text-sm leading-relaxed ${
+                m.role === "user" ? "bg-aksen-deep text-on-aksen" : "bg-kat-raised text-kat-text"
               }`}
             >
-              {m.content || <span className="inline-block animate-pulse text-ink-soft">Mengetik…</span>}
+              {m.content || <span className="inline-block animate-pulse text-kat-muted">Mengetik…</span>}
             </p>
           </div>
         ))}
@@ -129,9 +119,8 @@ export function ProductChat({
               type="button"
               onClick={() => send(s)}
               disabled={busy}
-              className="flex items-center gap-1 rounded-full border border-emas/60 bg-emas-soft/50 px-3 py-1.5 text-xs font-medium text-tanah-800 transition hover:bg-emas-soft disabled:opacity-50"
+              className="rounded-sm border border-kat-line px-3 py-1.5 text-left text-xs text-kat-text transition-colors duration-150 hover:border-aksen disabled:opacity-50"
             >
-              <Sparkles className="size-3" aria-hidden />
               {s}
             </button>
           ))}
@@ -139,13 +128,13 @@ export function ProductChat({
       )}
 
       {error && (
-        <p role="alert" className="mx-4 mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-800">
+        <p role="alert" className="mx-4 mb-2 rounded-sm bg-red-50 px-3 py-2 text-xs text-red-800">
           {error}
         </p>
       )}
 
       <form
-        className="flex items-end gap-2 border-t border-tanah-900/10 p-3"
+        className="flex items-end gap-2 border-t border-kat-line p-3"
         onSubmit={(e) => {
           e.preventDefault();
           void send(input);
@@ -169,9 +158,9 @@ export function ProductChat({
               }
             }}
             placeholder="Tulis pertanyaan…"
-            className="block w-full resize-none rounded-xl border border-tanah-200 bg-krem px-3 py-2.5 text-sm text-ink placeholder:text-ink-soft/70 focus:border-emas focus:outline-none"
+            className="block w-full resize-none rounded-sm border border-kat-line bg-kat-bg px-3 py-2.5 text-sm text-kat-text placeholder:text-kat-muted/70 focus:border-aksen focus:outline-none"
           />
-          <p className="mt-1 text-right text-[11px] text-ink-soft">
+          <p className="mt-1 text-right text-[11px] text-kat-muted">
             {input.length}/{MAX_LEN}
           </p>
         </div>
@@ -179,7 +168,7 @@ export function ProductChat({
           type="submit"
           disabled={busy || !input.trim()}
           aria-label="Kirim pertanyaan"
-          className="mb-5 grid size-10 place-items-center rounded-xl bg-emas text-tanah-900 transition hover:brightness-105 disabled:opacity-40"
+          className="mb-5 grid size-10 place-items-center rounded-sm bg-aksen-deep text-on-aksen transition-colors duration-150 hover:bg-aksen disabled:opacity-40"
         >
           <Send className="size-4" aria-hidden />
         </button>

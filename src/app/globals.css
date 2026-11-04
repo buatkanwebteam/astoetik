@@ -20,13 +20,36 @@
   --color-ink: #2b1d12;
   --color-ink-soft: #5c4a3b;
 
+  /* Homepage publik: palet coklat tanah + emas terang. */
+  --color-hm-dark: #3e2414;
+  --color-hm-deep: #2a190e;
+  --color-hm-mid: #8c5a2f;
+  --color-hm-gold: #f0cf8a;
+  --color-hm-sand: #efe6d6;
+  --color-hm-rose: #f0e2dc;
+  --color-hm-muted: #7a6a5c;
+
   --color-tiktok: #0f9e99;
   --color-instagram: #c2338a;
   --color-shopee: #e8590c;
   --color-youtube: #c92a2a;
 
-  --font-display: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  /* Katalog produk & halaman QR: putih + coklat tanah. Dark values below. */
+  --color-kat-bg: #ffffff;
+  --color-kat-card: #ffffff;
+  --color-kat-raised: #faf3ec;
+  --color-kat-line: #e7dccf;
+  --color-kat-text: #2b1d12;
+  --color-kat-muted: #75604f;
+  --color-aksen: #8c5a2f;
+  --color-aksen-deep: #6b3f1d;
+  --color-aksen-text: #6b3f1d;
+  --color-on-aksen: #ffffff;
+  --color-fokus: #c8923b;
+
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-grotesk: var(--font-bricolage), var(--font-instrument), system-ui, sans-serif;
 }
 
 body {
@@ -44,13 +67,77 @@ body {
 /* Kawung-inspired batik motif, drawn as an inline SVG tile. */
 .batik-pattern {
   background-color: var(--color-tanah-600);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23c8923b' stroke-opacity='0.28' stroke-width='1.2'%3E%3Cellipse cx='24' cy='12' rx='6' ry='10'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='10'/%3E%3Cellipse cx='12' cy='24' rx='10' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='10' ry='6'/%3E%3Ccircle cx='24' cy='24' r='1.6' fill='%23c8923b' fill-opacity='0.4'/%3E%3Ccircle cx='0' cy='0' r='3'/%3E%3Ccircle cx='48' cy='0' r='3'/%3E%3Ccircle cx='0' cy='48' r='3'/%3E%3Ccircle cx='48' cy='48' r='3'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 48px 48px;
 }
 
 .batik-pattern-light {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%236b3f1d' stroke-opacity='0.08' stroke-width='1.2'%3E%3Cellipse cx='24' cy='12' rx='6' ry='10'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='10'/%3E%3Cellipse cx='12' cy='24' rx='10' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='10' ry='6'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 48px 48px;
+  background-image: none;
+}
+
+/* Brown scrollbars everywhere; scrollbar-color inherits into inner scroll areas. */
+:root {
+  scrollbar-color: var(--color-tanah-300) var(--color-kat-raised);
+}
+
+/* Dashboard dark mode: the kat-* tokens follow the dashboard's dark surfaces. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-kat-bg: #1b130d;
+  --color-kat-card: #24190f;
+  --color-kat-raised: #2e2116;
+  --color-kat-line: #3d2d1f;
+  --color-kat-text: #fbf6ee;
+  --color-kat-muted: #c4b4a2;
+  --color-aksen: #e2b56b;
+  --color-aksen-deep: #c8923b;
+  --color-aksen-text: #e2b56b;
+  --color-on-aksen: #2a190e;
+  --color-fokus: #e2b56b;
+}
+
+/* Dual-thumb price slider: two stacked range inputs, only thumbs take pointer events. */
+.dual-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+.dual-range::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--color-kat-bg);
+  border: 3px solid var(--color-aksen);
+  cursor: grab;
+}
+.dual-range::-moz-range-thumb {
+  pointer-events: auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--color-kat-bg);
+  border: 3px solid var(--color-aksen);
+  cursor: grab;
+}
+.dual-range:focus-visible {
+  outline: none;
+}
+.dual-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px var(--color-fokus);
+}
+.dual-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px var(--color-fokus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::backdrop {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
 }
 
 @media print {
@@ -60,4 +147,68 @@ body {
   body {
     background: white;
   }
+}
+
+/* Homepage: marquee tak berujung. Konten digandakan, geser -50%. */
+@keyframes hm-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes hm-marquee-rev {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.hm-marquee {
+  display: flex;
+  width: max-content;
+  animation: hm-marquee 32s linear infinite;
+}
+.hm-marquee-rev {
+  animation-name: hm-marquee-rev;
+}
+.hm-marquee-wrap:hover .hm-marquee {
+  animation-play-state: paused;
+}
+
+/* Slider kalkulator */
+.hm-range {
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(42 25 14 / 0.25);
+}
+.hm-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--color-hm-deep);
+  border: 4px solid var(--color-hm-gold);
+  cursor: grab;
+}
+.hm-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--color-hm-deep);
+  border: 4px solid var(--color-hm-gold);
+  cursor: grab;
+}
+
+/* Lenis (scroll halus) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
