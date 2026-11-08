@@ -11,7 +11,7 @@ export default async function ContentPage() {
 
   return (
     <div className="w-full">
-      <PageHeader title="Content Planner" subtitle="Kalender konten Instagram & TikTok, plus ide konten dari AI." />
+      <PageHeader title="Content Planner" subtitle="Kalender konten Instagram & TikTok" />
       <ContentPlanner
         initialPlans={plans}
         products={products.map((p) => ({ code: p.code, name: p.name }))}
