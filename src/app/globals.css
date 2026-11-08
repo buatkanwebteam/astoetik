@@ -276,3 +276,13 @@ html.lenis body {
 :root[data-theme="dark"] .glossy::after {
   background: linear-gradient(115deg, transparent 18%, rgb(255 255 255 / 0.06) 30%, transparent 42%);
 }
+
+/* Brand loader bar (app/loading.tsx). */
+@keyframes loadbar {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(310%);
+  }
+}

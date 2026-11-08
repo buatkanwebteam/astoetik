@@ -30,7 +30,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-hm-deep/15" />
 
       <div className="relative z-10 flex min-h-screen w-full flex-col px-4 md:px-6">
-        <header className="relative z-30 -mx-4 grid h-20 grid-cols-[1fr_auto_1fr] items-center border-b border-white/10 bg-hm-deep/20 px-4 backdrop-blur-md md:-mx-6 md:px-6">
+        <header className="relative z-30 -mx-4 grid h-20 grid-cols-[1fr_auto_1fr] items-center border-b border-white/10 bg-hm-deep/55 px-4 md:-mx-6 md:px-6">
           <Link href="/" aria-label="Astoetik, beranda" className="justify-self-start">
             <Image src="/home/logo-astoetik.png" alt="Astoetik" width={563} height={278} priority className="h-12 w-auto transition duration-300 hover:scale-105" />
           </Link>

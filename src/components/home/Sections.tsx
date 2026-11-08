@@ -112,7 +112,7 @@ function GlossCard({ children, className = "", inner = "p-8", back, bubbles = "a
   }[bubbles];
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/25 via-white/10 to-white/[.04] shadow-[0_24px_50px_-20px_rgba(0,0,0,.7),inset_0_1px_0_rgba(255,255,255,.45),inset_0_-1px_0_rgba(255,255,255,.08)] ring-1 ring-white/25 backdrop-blur-md ${className}`}
+      className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/25 via-white/10 to-white/[.04] shadow-[0_24px_50px_-20px_rgba(0,0,0,.7),inset_0_1px_0_rgba(255,255,255,.45),inset_0_-1px_0_rgba(255,255,255,.08)] ring-1 ring-white/25 md:backdrop-blur-md ${className}`}
     >
       {back}
       {layout.map((pos, i) => (

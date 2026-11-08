@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { LogIn } from "lucide-react";
+import { FaArrowRightToBracket, FaSpinner } from "react-icons/fa6";
 import { login, type LoginState } from "./actions";
 
 export function LoginForm({ next }: { next: string }) {
@@ -50,7 +50,7 @@ export function LoginForm({ next }: { next: string }) {
         disabled={pending}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-tanah-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-tanah-700 disabled:opacity-60"
       >
-        <LogIn className="size-4" aria-hidden />
+        {pending ? <FaSpinner className="size-4 animate-spin" aria-hidden /> : <FaArrowRightToBracket className="size-4" aria-hidden />}
         {pending ? "Memeriksa…" : "Masuk"}
       </button>
     </form>

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { env } from "@/lib/env";
+import { NavProgress } from "@/components/NavProgress";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -29,7 +30,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="id" className={`${bricolage.variable} ${instrument.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <NavProgress />
+        {children}
+      </body>
     </html>
   );
 }
