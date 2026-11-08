@@ -58,10 +58,30 @@ body {
   font-family: var(--font-sans);
 }
 
-:focus-visible {
+/* Keyboard focus ring for buttons, links and other controls. Text fields (input, textarea)
+   are left out on purpose: they show only the blinking caret. */
+:where(
+    a,
+    button,
+    summary,
+    select,
+    [tabindex],
+    input[type="checkbox"],
+    input[type="radio"],
+    input[type="range"],
+    input[type="file"],
+    input[type="submit"],
+    input[type="button"]
+  ):focus-visible {
   outline: 2px solid var(--color-emas);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* Text fields: no browser default focus ring either, only the caret. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus-visible,
+textarea:focus-visible {
+  outline: none;
 }
 
 /* Kawung-inspired batik motif, drawn as an inline SVG tile. */
@@ -211,4 +231,48 @@ html.lenis body {
 }
 .lenis.lenis-stopped {
   overflow: hidden;
+}
+
+/* Glossy cards: soft top-left light, inner edge highlight, diagonal sheen. */
+.glossy {
+  position: relative;
+  background-image: linear-gradient(145deg, rgb(255 255 255 / 0.6) 0%, rgb(255 255 255 / 0) 48%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(42 25 14 / 0.06),
+    0 12px 28px -16px rgb(42 25 14 / 0.4);
+}
+.glossy::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 18%, rgb(255 255 255 / 0.28) 30%, transparent 42%);
+}
+.glossy-dark {
+  position: relative;
+  background-image: linear-gradient(145deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0) 50%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    inset 0 -1px 0 rgb(0 0 0 / 0.3),
+    0 14px 30px -16px rgb(0 0 0 / 0.6);
+}
+.glossy-dark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 18%, rgb(255 255 255 / 0.08) 30%, transparent 42%);
+}
+:root[data-theme="dark"] .glossy {
+  background-image: linear-gradient(145deg, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0) 48%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    inset 0 -1px 0 rgb(0 0 0 / 0.25),
+    0 12px 28px -16px rgb(0 0 0 / 0.6);
+}
+:root[data-theme="dark"] .glossy::after {
+  background: linear-gradient(115deg, transparent 18%, rgb(255 255 255 / 0.06) 30%, transparent 42%);
 }

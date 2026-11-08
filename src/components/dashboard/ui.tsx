@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Download, FlaskConical } from "lucide-react";
+import { FaDownload } from "react-icons/fa6";
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <section
-      className={`rounded-2xl bg-white p-5 shadow-sm ring-1 ring-tanah-900/10 dark:bg-[#24190f] dark:ring-white/10 ${className}`}
+      className={`glossy rounded-3xl border border-tanah-900/[0.07] bg-white/60 p-5 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.05] ${className}`}
     >
       {children}
     </section>
@@ -15,7 +15,7 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 export function CardTitle({ children, action, id }: { children: ReactNode; action?: ReactNode; id?: string }) {
   return (
     <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-      <h2 id={id} className="font-display text-lg text-tanah-700 dark:text-emas-soft">
+      <h2 id={id} className="font-display text-xl font-semibold text-ink dark:text-krem">
         {children}
       </h2>
       {action}
@@ -23,20 +23,11 @@ export function CardTitle({ children, action, id }: { children: ReactNode; actio
   );
 }
 
-export function DummyBadge() {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-emas bg-emas-soft px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-tanah-800">
-      <FlaskConical className="size-3" aria-hidden />
-      Data Dummy
-    </span>
-  );
-}
-
 export function PageHeader({ title, subtitle, children }: { title: string; subtitle?: string; children?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="font-display text-3xl text-tanah-700 dark:text-krem">{title}</h1>
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+      <div className="min-h-10 max-w-full sm:max-w-[calc(100%-13rem)]">
+        <h1 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-krem">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-ink-soft dark:text-krem/70">{subtitle}</p>}
       </div>
       {children}
@@ -48,9 +39,9 @@ export function ExportLink({ href, label = "Export .xlsx" }: { href: string; lab
   return (
     <a
       href={href}
-      className="no-print inline-flex items-center gap-1.5 rounded-lg border border-tanah-200 px-2.5 py-1.5 text-xs font-medium text-tanah-700 transition hover:bg-tanah-50 dark:border-white/15 dark:text-krem/90 dark:hover:bg-white/10"
+      className="no-print inline-flex items-center gap-1.5 rounded-full bg-tanah-50 px-3 py-1.5 text-xs font-semibold text-tanah-700 transition hover:bg-tanah-100 dark:bg-white/10 dark:text-krem/90 dark:hover:bg-white/20"
     >
-      <Download className="size-3.5" aria-hidden />
+      <FaDownload className="size-3" aria-hidden />
       {label}
     </a>
   );
@@ -62,10 +53,10 @@ export function Chip({ href, active, children }: { href: string; active: boolean
       href={href}
       scroll={false}
       aria-current={active ? "true" : undefined}
-      className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+      className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
         active
-          ? "bg-tanah-600 text-white dark:bg-emas dark:text-tanah-900"
-          : "bg-white text-ink-soft ring-1 ring-tanah-900/10 hover:bg-tanah-50 dark:bg-white/5 dark:text-krem/80 dark:ring-white/10 dark:hover:bg-white/10"
+          ? "bg-tanah-900 text-krem dark:bg-emas dark:text-tanah-900"
+          : "bg-tanah-50 text-ink-soft hover:bg-tanah-100 dark:bg-white/5 dark:text-krem/80 dark:hover:bg-white/10"
       }`}
     >
       {children}

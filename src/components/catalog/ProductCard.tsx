@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Boxes, ExternalLink, Pencil, QrCode } from "lucide-react";
+import { Boxes, ExternalLink, Pencil } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import { formatRupiah } from "@/lib/format";
 
@@ -17,16 +17,13 @@ function badgeOf(item: CatalogItem): { label: string; tone: "emas" | "plain" } |
   return null;
 }
 
-/** Units, QR download and public page links, shared by grid and table views. */
+/** Units and public page links, shared by grid and table views. */
 export function ProductLinks({ code }: { code: string }) {
   return (
     <>
       <Link href={`/dashboard/products/${code}`} className={iconBtn} aria-label={`Kelola unit ${code}`} title="Kelola unit & QR per unit">
         <Boxes className="size-4" aria-hidden />
       </Link>
-      <a href={`/api/qr/${code}?download=1`} className={iconBtn} aria-label={`Unduh QR ${code}`} title="Unduh QR jenis produk (PNG)">
-        <QrCode className="size-4" aria-hidden />
-      </a>
       <a
         href={`/p/${code}`}
         target="_blank"
@@ -53,7 +50,7 @@ export function ProductCard({
   onEdit: () => void;
 }) {
   const badge = badgeOf(item);
-  const meta = [item.material, item.watt ? `${item.watt} W` : null, item.control].filter(Boolean).join(" · ");
+  const meta = [item.material, item.watt ? `${item.watt} W` : null, item.control].filter(Boolean).join(", ");
 
   return (
     <article className="flex h-full flex-col rounded-md border border-kat-line bg-kat-card">
@@ -86,9 +83,9 @@ export function ProductCard({
         <h3 className="mt-1.5 font-grotesk text-base font-semibold leading-snug text-kat-text">{item.name}</h3>
         {meta && <p className="mt-1 text-xs text-kat-muted">{meta}</p>}
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-4">
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-x-3 gap-y-2 pt-4">
           <p className="font-grotesk text-lg font-semibold tabular-nums text-kat-text">{formatRupiah(item.price)}</p>
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <ProductLinks code={item.code} />
             <button
               type="button"

@@ -1,3 +1,5 @@
+import { pdfContext } from "./faq-pdf";
+
 // Excerpts transcribed from the official user manuals (PANDUAN_K-CL001,
 // Petunjuk_Penggunaan_ASTOETIK-S_A-AS001, PANDUAN_ASD002). Used as chatbot
 // context. Statements that conflict with "Data per Produk" were dropped
@@ -101,9 +103,15 @@ Penanganan masalah:
 Jika masalah belum teratasi, hubungi technical support Astoetik.`;
 
 export const MANUAL_EXCERPTS: Record<string, string> = {
-  "A-AS001": A_AS001,
-  "A-SD002": A_SD002,
-  "K-CL001": K_CL001,
+  "A-AS001": `${A_AS001}
+
+${pdfContext("A-AS001")}`,
+  "A-SD002": `${A_SD002}
+
+${pdfContext("A-SD002")}`,
+  "K-CL001": `${K_CL001}
+
+${pdfContext("K-CL001")}`,
 };
 
 export const CS_ADDRESS = "Jeblog RT.02, Tirtonirmolo, Kasihan, Bantul, Yogyakarta 55181";

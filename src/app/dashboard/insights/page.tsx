@@ -12,7 +12,7 @@ export default async function InsightsPage() {
   const [report, messages] = await Promise.all([db.getLatestInsightReport(), db.listUserMessages(since, 300)]);
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="w-full">
       <PageHeader
         title="Insight Pelanggan"
         subtitle="Ringkasan AI dari pertanyaan yang masuk lewat chatbot halaman produk (scan QR)."

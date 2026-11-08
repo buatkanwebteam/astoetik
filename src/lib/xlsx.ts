@@ -50,7 +50,7 @@ export function sheet<T>(name: string, columns: Column<T>[], rows: T[], title?: 
 
 export function workbook(specs: SheetSpec[]): Buffer {
   const wb = XLSX.utils.book_new();
-  wb.Props = { Title: "ASTERA-X Export", Author: "CV. Astoetik Indonesia", CreatedDate: new Date() };
+  wb.Props = { Title: "Astoetik Export", Author: "CV. Astoetik Indonesia", CreatedDate: new Date() };
   for (const s of specs) XLSX.utils.book_append_sheet(wb, s.build(), s.name);
   return XLSX.write(wb, { type: "buffer", bookType: "xlsx", compression: true }) as Buffer;
 }

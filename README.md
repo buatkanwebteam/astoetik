@@ -27,7 +27,7 @@ Buka http://localhost:3000.
 | Yang dicoba | Cara |
 |---|---|
 | Halaman produk | http://localhost:3000/p/A-AS001 (simulasi scan: `?src=qr`) |
-| Login admin | http://localhost:3000/login → `admin@astoetik.test` / `astera123` |
+| Login admin | http://localhost:3000/login → `admin` / `admin` |
 | Dashboard | `/dashboard`, `/dashboard/content`, `/dashboard/insights`, `/dashboard/products` |
 
 Dalam Mode Demo:
@@ -44,7 +44,7 @@ Salin `.env.example` ke `.env.local`, lalu isi seperlunya.
 
 | Variabel | Fungsi |
 |---|---|
-| `NEXT_PUBLIC_SITE_URL` | URL publik aplikasi. **Dipakai di dalam QR.** Wajib domain publik sebelum QR dicetak. |
+| `NEXT_PUBLIC_SITE_URL` | URL publik aplikasi (`https://asterax.my.id`). **Dipakai di dalam QR.** |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Supabase. Anon key dipakai untuk verifikasi login admin. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Hanya server. Semua baca/tulis database dari route handler. Bersama `NEXT_PUBLIC_SUPABASE_URL` mengaktifkan mode Supabase. |
 | `GEMINI_API_KEY` | Hanya server. Mengaktifkan AI sungguhan. |
@@ -76,10 +76,10 @@ Key hanya dipakai di server (route handler); tidak pernah dikirim ke browser.
 1. Push repo ini ke GitHub.
 2. Di https://vercel.com → *Add New → Project* → import repo. Framework terdeteksi otomatis (Next.js).
 3. Sebelum *Deploy*, buka **Environment Variables** dan isi semua variabel di atas untuk environment *Production* (dan *Preview* bila perlu):
-   - `NEXT_PUBLIC_SITE_URL` = domain produksi, mis. `https://astera-x.vercel.app` (bisa diisi setelah deploy pertama, lalu *Redeploy*).
+   - `NEXT_PUBLIC_SITE_URL` = `https://asterax.my.id`.
    - `SESSION_SECRET` = string acak panjang.
    - Kredensial Supabase dan Gemini.
-4. Deploy. Setelah domain final diketahui, pastikan `NEXT_PUBLIC_SITE_URL` sudah benar, lalu **Redeploy** (variabel `NEXT_PUBLIC_*` dibaca saat build).
+4. Deploy. Variabel `NEXT_PUBLIC_*` dibaca saat build, jadi **Redeploy** setelah mengubahnya.
 5. Buka `/dashboard/products` (Katalog Produk) → tambah/edit produk, unduh QR / cetak label. Pindai dengan kamera HP: harus membuka `https://<domain>/p/<kode>?src=qr`.
 
 Atau lewat CLI: `npm i -g vercel`, `vercel link`, `vercel env add <NAMA>`, `vercel --prod`.

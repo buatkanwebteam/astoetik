@@ -25,7 +25,8 @@ export interface Product {
   note: string | null;
 }
 
-export type QcStatus = "lulus" | "menunggu" | "tidak-lulus";
+/** Every unit that gets a QR has passed QC, so there is only one status. */
+export type QcStatus = "lulus";
 
 /** One physical unit of a product type. Its QR opens /p/<productCode>/<serial>. */
 export interface ProductUnit {

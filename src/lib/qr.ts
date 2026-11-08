@@ -10,7 +10,7 @@ export function productQrUrl(code: string, serial?: string): string {
 
 const OPTIONS = {
   errorCorrectionLevel: "M" as const,
-  margin: 2,
+  margin: 4,
   width: 768,
   color: { dark: "#2a190e", light: "#ffffff" },
 };

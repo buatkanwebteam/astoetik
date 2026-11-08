@@ -6,7 +6,6 @@ import { PRODUCTS } from "./products";
 // so in its note. Fixed dates keep the seed stable; the mix is deliberate so the
 // unit page shows every state: warranty active / expired, QC passed / pending.
 
-export const SAMPLE_UNIT_NOTE = "Data contoh untuk demo.";
 const WARRANTY_MONTHS = 12;
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -25,7 +24,7 @@ export const SAMPLE_UNITS: ProductUnit[] = PRODUCTS.flatMap((p, i) => {
   const plan: { serial: string; date: string; pendingQc: boolean }[] = [
     { serial: "0001", date: expired ? `2025-08-${pad(4 + i)}` : `2026-05-${pad(4 + i)}`, pendingQc: false },
     { serial: "0002", date: `2026-08-${pad(3 + i)}`, pendingQc: false },
-    { serial: "0003", date: `2026-10-${pad(5 + i)}`, pendingQc: i % 4 === 3 },
+    { serial: "0003", date: `2026-10-${pad(5 + i)}`, pendingQc: false },
   ];
   return plan.map(({ serial, date, pendingQc }) => ({
     productCode: p.code,
@@ -33,10 +32,10 @@ export const SAMPLE_UNITS: ProductUnit[] = PRODUCTS.flatMap((p, i) => {
     productionCode: `PRD-${date.slice(2, 4)}${date.slice(5, 7)}-${batch}`,
     productionDate: date,
     warrantyMonths: WARRANTY_MONTHS,
-    qcStatus: pendingQc ? "menunggu" : "lulus",
+    qcStatus: "lulus",
     qcDate: pendingQc ? null : addDays(date, 1),
     qcInspector: pendingQc ? null : inspector,
-    note: SAMPLE_UNIT_NOTE,
+    note: null,
     createdAt: `${date}T09:00:00.000Z`,
   }));
 });

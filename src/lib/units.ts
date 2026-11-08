@@ -1,9 +1,7 @@
 import type { ProductUnit, QcStatus } from "@/types";
 
 export const QC_LABEL: Record<QcStatus, string> = {
-  lulus: "Lulus QC",
-  menunggu: "Menunggu QC",
-  "tidak-lulus": "Tidak lulus QC",
+  lulus: "Lolos QC",
 };
 
 /** Today as YYYY-MM-DD in WIB, so the warranty flips at local midnight regardless of server TZ. */

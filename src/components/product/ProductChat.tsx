@@ -1,6 +1,6 @@
 "use client";
 
-import { Send } from "lucide-react";
+import { FaPaperPlane } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
 import { track } from "./track";
 
@@ -90,36 +90,44 @@ export function ProductChat({
   }
 
   return (
-    <section aria-labelledby="chat-title" className="overflow-hidden rounded-md border border-kat-line bg-kat-card">
-      <header className="border-b border-kat-line bg-kat-raised px-4 py-3">
-        <h2 id="chat-title" className="font-grotesk text-lg font-semibold text-kat-text">
+    <section
+      aria-labelledby="chat-title"
+      className="flex flex-col rounded-3xl bg-gradient-to-br from-hm-dark via-hm-deep to-hm-deep p-5 shadow-[0_24px_60px_-24px_rgba(0,0,0,.7),inset_0_1px_0_rgba(255,255,255,.3)] ring-1 ring-white/20 sm:p-6"
+    >
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex gap-2" aria-hidden>
+          <span className="size-3 rounded-full bg-[#ff5f57]" />
+          <span className="size-3 rounded-full bg-[#febc2e]" />
+          <span className="size-3 rounded-full bg-[#28c840]" />
+        </div>
+        <h2 id="chat-title" className="font-display text-lg font-semibold text-white">
           Tanya Asisten
         </h2>
       </header>
 
-      <div ref={listRef} className="max-h-96 min-h-48 space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
+      <div ref={listRef} className="mt-4 max-h-96 min-h-48 flex-1 space-y-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-width:thin]" aria-live="polite">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <p
-              className={`max-w-[85%] whitespace-pre-wrap rounded-md px-3.5 py-2 text-sm leading-relaxed ${
-                m.role === "user" ? "bg-aksen-deep text-on-aksen" : "bg-kat-raised text-kat-text"
+              className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                m.role === "user" ? "bg-hm-gold font-medium text-hm-deep" : "border border-white/20 bg-white/10 text-white"
               }`}
             >
-              {m.content || <span className="inline-block animate-pulse text-kat-muted">Mengetik…</span>}
+              {m.content || <span className="inline-block animate-pulse text-white/60">Mengetik…</span>}
             </p>
           </div>
         ))}
       </div>
 
       {messages.length <= 1 && suggestions.length > 0 && (
-        <div className="flex flex-wrap gap-2 px-4 pb-3">
+        <div className="mt-4 flex flex-wrap gap-2">
           {suggestions.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => send(s)}
               disabled={busy}
-              className="rounded-sm border border-kat-line px-3 py-1.5 text-left text-xs text-kat-text transition-colors duration-150 hover:border-aksen disabled:opacity-50"
+              className="rounded-full bg-hm-gold px-4 py-2 text-left text-xs font-semibold text-hm-deep transition hover:bg-white disabled:opacity-50"
             >
               {s}
             </button>
@@ -128,49 +136,44 @@ export function ProductChat({
       )}
 
       {error && (
-        <p role="alert" className="mx-4 mb-2 rounded-sm bg-red-50 px-3 py-2 text-xs text-red-800">
+        <p role="alert" className="mt-3 rounded-xl bg-red-500/20 px-3 py-2 text-xs text-red-100">
           {error}
         </p>
       )}
 
       <form
-        className="flex items-end gap-2 border-t border-kat-line p-3"
+        className="mt-4 flex items-center gap-2 rounded-full bg-white/10 py-2 pl-5 pr-2 ring-1 ring-white/20"
         onSubmit={(e) => {
           e.preventDefault();
           void send(input);
         }}
       >
-        <div className="flex-1">
-          <label htmlFor="chat-input" className="sr-only">
-            Tulis pertanyaan tentang {productName}
-          </label>
-          <textarea
-            id="chat-input"
-            rows={1}
-            value={input}
-            maxLength={MAX_LEN}
-            onFocus={markOpened}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                void send(input);
-              }
-            }}
-            placeholder="Tulis pertanyaan…"
-            className="block w-full resize-none rounded-sm border border-kat-line bg-kat-bg px-3 py-2.5 text-sm text-kat-text placeholder:text-kat-muted/70 focus:border-aksen focus:outline-none"
-          />
-          <p className="mt-1 text-right text-[11px] text-kat-muted">
-            {input.length}/{MAX_LEN}
-          </p>
-        </div>
+        <label htmlFor="chat-input" className="sr-only">
+          Tulis pertanyaan tentang {productName}
+        </label>
+        <textarea
+          id="chat-input"
+          rows={1}
+          value={input}
+          maxLength={MAX_LEN}
+          onFocus={markOpened}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              void send(input);
+            }
+          }}
+          placeholder="Tulis pertanyaan"
+          className="block min-w-0 flex-1 resize-none bg-transparent py-1.5 text-sm text-white placeholder:text-white/50 focus:outline-none"
+        />
         <button
           type="submit"
           disabled={busy || !input.trim()}
           aria-label="Kirim pertanyaan"
-          className="mb-5 grid size-10 place-items-center rounded-sm bg-aksen-deep text-on-aksen transition-colors duration-150 hover:bg-aksen disabled:opacity-40"
+          className="grid size-9 shrink-0 place-items-center rounded-full bg-hm-gold text-hm-deep transition hover:bg-white disabled:opacity-40"
         >
-          <Send className="size-4" aria-hidden />
+          <FaPaperPlane className="size-4" aria-hidden />
         </button>
       </form>
     </section>

@@ -1,5 +1,6 @@
 import type { Product, ProductFaq } from "../types";
 import { PRODUCTS } from "./products";
+import { FAQ_PDF, pdfQuestions } from "./faq-pdf";
 
 type QA = [question: string, answer: string];
 
@@ -96,6 +97,14 @@ const MANUAL_FAQS: Record<string, QA[]> = {
     ],
   ],
 };
+
+// "FAQ per Produk.pdf" replaces the older hand-written operation, shutdown and troubleshooting answers.
+// Only the unrelated items (box contents, wax capacity, safety, no self-repair) are kept from the manual.
+const KEEP_FROM_MANUAL = /kardus|banyak malam|kapasitas|dibongkar|keselamatan/i;
+for (const code of Object.keys(FAQ_PDF)) {
+  const kept = (MANUAL_FAQS[code] ?? []).filter(([q]) => KEEP_FROM_MANUAL.test(q));
+  MANUAL_FAQS[code] = [...kept, ...pdfQuestions(code)];
+}
 
 function specValue(p: Product, ...labels: string[]): string | null {
   for (const label of labels) {

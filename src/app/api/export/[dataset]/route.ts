@@ -32,7 +32,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/export/[dataset]
   }
   const ds = dataset as Dataset;
   const filters = parseFilters(Object.fromEntries(new URL(req.url).searchParams));
-  const scope = `${filters.days} hari terakhir · ${filters.platform === "all" ? "semua platform" : PLATFORM_META[filters.platform].label} · DATA DUMMY`;
+  const scope = `${filters.days} hari terakhir, ${filters.platform === "all" ? "semua platform" : PLATFORM_META[filters.platform].label}`;
   const db = getDb();
   const specs: SheetSpec[] = [];
   const want = (d: Dataset) => ds === d || ds === "all";
@@ -47,7 +47,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/export/[dataset]
           { header: "Jumlah", value: (s) => s.value, format: NUM, width: 14 },
           { header: "Konversi dari tahap sebelumnya", value: (s) => s.fromPrev, format: PCT, width: 30 },
           { header: "Konversi dari impression", value: (s) => s.fromTop, format: PCT, width: 26 },
-        ], funnel(totals(metrics)), `Customer Journey Funnel · ${scope}`),
+        ], funnel(totals(metrics)), `Customer Journey Funnel - ${scope}`),
       );
     }
     if (want("metrics")) {
@@ -63,7 +63,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/export/[dataset]
           { header: "Klik Marketplace", value: (m) => m.marketplaceClicks, format: NUM, width: 16 },
           { header: "Purchase", value: (m) => m.purchases, format: NUM, width: 11 },
           { header: "Followers", value: (m) => m.followers, format: NUM, width: 12 },
-        ], rows, `Metrik Sosial Harian · ${scope}`),
+        ], rows, `Metrik Sosial Harian - ${scope}`),
       );
     }
     if (want("posts")) {
@@ -83,7 +83,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/export/[dataset]
           { header: "Engagement Rate", value: (p) => ratio(postEngagement(p), p.impressions), format: PCT, width: 16 },
           { header: "Klik", value: (p) => p.clicks, format: NUM },
           { header: "Purchase", value: (p) => p.purchases, format: NUM },
-        ], rows, `Performa Konten · ${scope}`),
+        ], rows, `Performa Konten - ${scope}`),
       );
     }
   }
@@ -91,8 +91,8 @@ export async function GET(req: Request, ctx: RouteContext<"/api/export/[dataset]
   if (want("insights")) {
     const report = await db.getLatestInsightReport();
     const title = report
-      ? `Insight Pertanyaan Pelanggan · ${report.totalMessages} pertanyaan · dibuat ${wib(report.createdAt).toISOString().slice(0, 16).replace("T", " ")} WIB`
-      : "Insight Pertanyaan Pelanggan · belum ada ringkasan";
+      ? `Insight Pertanyaan Pelanggan - ${report.totalMessages} pertanyaan - dibuat ${wib(report.createdAt).toISOString().slice(0, 16).replace("T", " ")} WIB`
+      : "Insight Pertanyaan Pelanggan - belum ada ringkasan";
     specs.push(
       sheet<InsightTopic>("Insight Pelanggan", [
         { header: "Topik", value: (t) => t.topic, width: 28 },
@@ -125,7 +125,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/export/[dataset]
   return new Response(new Uint8Array(buf), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="astera-x-${ds}-${stamp}.xlsx"`,
+      "Content-Disposition": `attachment; filename="astoetik-${ds}-${stamp}.xlsx"`,
       "Cache-Control": "no-store",
     },
   });

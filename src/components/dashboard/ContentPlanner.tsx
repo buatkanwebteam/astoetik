@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { ChevronLeft, ChevronRight, Loader2, Plus, Sparkles, Trash2, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { FaChevronLeft, FaChevronRight, FaLightbulb, FaPlus, FaSpinner, FaXmark } from "react-icons/fa6";
+import { HoldDelete } from "./HoldDelete";
+import { Select } from "./Select";
 import type { ContentPlan, ContentPlatform, ContentStatus } from "@/types";
 import { Card, CardTitle, ExportLink } from "./ui";
 
@@ -37,7 +40,7 @@ function monthGrid(year: number, month: number): Date[] {
   return Array.from({ length: weeks * 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
 }
 
-export function ContentPlanner({ initialPlans, products, demo }: { initialPlans: ContentPlan[]; products: ProductOption[]; demo: boolean }) {
+export function ContentPlanner({ initialPlans, products }: { initialPlans: ContentPlan[]; products: ProductOption[] }) {
   const [plans, setPlans] = useState(initialPlans);
   const [cursor, setCursor] = useState(() => {
     const now = new Date();
@@ -105,11 +108,13 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
   }
 
   async function remove(id: string) {
-    if (!confirm("Hapus rencana konten ini?")) return;
     const res = await fetch(`/api/content-plans/${id}`, { method: "DELETE" });
     if (res.ok) {
-      setPlans((ps) => ps.filter((p) => p.id !== id));
-      setEditing(null);
+      // Let the "Terhapus" state show before the dialog closes.
+      window.setTimeout(() => {
+        setPlans((ps) => ps.filter((p) => p.id !== id));
+        setEditing(null);
+      }, 700);
     } else setError("Gagal menghapus.");
   }
 
@@ -137,10 +142,10 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ platform: gen.platform, count: gen.count, month: monthKey, theme: gen.theme || undefined }),
       });
-      const data = (await res.json()) as { plans?: ContentPlan[]; demo?: boolean; error?: string };
+      const data = (await res.json()) as { plans?: ContentPlan[]; error?: string };
       if (!res.ok || !data.plans) throw new Error(data.error ?? "Gagal membuat ide.");
       setPlans((ps) => [...ps, ...data.plans!]);
-      setGenNote(`${data.plans.length} ide ditambahkan sebagai status "Ide"${data.demo ? " (Mode Demo)" : ""}.`);
+      setGenNote(`${data.plans.length} ide ditambahkan sebagai status "Ide".`);
     } catch (e) {
       setGenNote(e instanceof Error ? e.message : "Terjadi kesalahan.");
     } finally {
@@ -161,18 +166,18 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
   const monthLabel = new Date(cursor.year, cursor.month, 1).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
+    <div className="grid gap-6 *:min-w-0 xl:grid-cols-[minmax(0,1fr)_320px]">
       <Card>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => shiftMonth(-1)} aria-label="Bulan sebelumnya" className="grid size-8 place-items-center rounded-lg hover:bg-tanah-50 dark:hover:bg-white/10">
-              <ChevronLeft className="size-4" aria-hidden />
+              <FaChevronLeft className="size-4" aria-hidden />
             </button>
             <h2 className="min-w-40 text-center font-display text-xl capitalize text-tanah-700 dark:text-emas-soft" aria-live="polite">
               {monthLabel}
             </h2>
             <button type="button" onClick={() => shiftMonth(1)} aria-label="Bulan berikutnya" className="grid size-8 place-items-center rounded-lg hover:bg-tanah-50 dark:hover:bg-white/10">
-              <ChevronRight className="size-4" aria-hidden />
+              <FaChevronRight className="size-4" aria-hidden />
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -194,14 +199,14 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
               onClick={() => openNew(new Date(cursor.year, cursor.month, new Date().getMonth() === cursor.month ? new Date().getDate() : 1))}
               className="inline-flex items-center gap-1 rounded-lg bg-tanah-600 px-3 py-1.5 text-xs font-semibold text-white dark:bg-emas dark:text-tanah-900"
             >
-              <Plus className="size-3.5" aria-hidden /> Tambah
+              <FaPlus className="size-3.5" aria-hidden /> Tambah
             </button>
             <ExportLink href="/api/export/content" />
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <div className="grid min-w-[640px] grid-cols-7 gap-px overflow-hidden rounded-xl bg-tanah-900/10 dark:bg-white/10">
+          <div className="grid grid-cols-7 sm:min-w-[640px] gap-px overflow-hidden rounded-xl bg-tanah-900/10 dark:bg-white/10">
             {WEEKDAYS.map((w) => (
               <div key={w} className="bg-tanah-50 py-1.5 text-center text-[11px] font-semibold uppercase tracking-wide text-ink-soft dark:bg-[#2c1f14] dark:text-krem/70">
                 {w}
@@ -216,11 +221,11 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
                   key={key}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={() => dragId && void moveTo(dragId, d)}
-                  className={`group min-h-24 bg-white p-1.5 dark:bg-[#24190f] ${inMonth ? "" : "opacity-45"}`}
+                  className={`group min-h-16 bg-white p-1 sm:min-h-24 sm:p-1.5 dark:bg-[#24190f] ${inMonth ? "" : "opacity-45"}`}
                 >
                   <div className="mb-1 flex items-center justify-between">
                     <span
-                      className={`grid size-6 place-items-center rounded-full text-xs ${
+                      className={`grid size-5 place-items-center rounded-full text-[11px] sm:size-6 sm:text-xs ${
                         key === today ? "bg-emas font-bold text-tanah-900" : "text-ink-soft dark:text-krem/70"
                       }`}
                     >
@@ -232,7 +237,7 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
                       aria-label={`Tambah konten ${d.toLocaleDateString("id-ID", { dateStyle: "long" })}`}
                       className="grid size-5 place-items-center rounded text-ink-soft opacity-0 transition hover:bg-tanah-50 focus:opacity-100 group-hover:opacity-100 dark:text-krem/70 dark:hover:bg-white/10"
                     >
-                      <Plus className="size-3.5" aria-hidden />
+                      <FaPlus className="size-3.5" aria-hidden />
                     </button>
                   </div>
                   <ul className="space-y-1">
@@ -248,7 +253,7 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
                             setEditing(p);
                           }}
                           title={p.title}
-                          className={`block w-full truncate rounded-md px-1.5 py-1 text-left text-[11px] font-medium ring-1 ${PLATFORM_STYLE[p.platform].chip} ${
+                          aria-label={p.title} className={`block w-full truncate rounded-md px-1.5 py-1 text-left text-[11px] font-medium ring-1 max-sm:h-1.5 max-sm:overflow-hidden max-sm:px-0 max-sm:py-0 max-sm:text-transparent ${PLATFORM_STYLE[p.platform].chip} ${
                             p.status === "posted" ? "line-through opacity-70" : ""
                           } ${p.status === "idea" ? "border border-dashed border-current" : ""}`}
                         >
@@ -263,7 +268,7 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
           </div>
         </div>
         <p className="mt-3 text-xs text-ink-soft dark:text-krem/60">
-          Klik tanggal untuk menambah, klik konten untuk mengubah, seret konten ke tanggal lain untuk menjadwal ulang. Garis putus-putus = ide AI/belum digarap.
+          Klik tanggal untuk menambah, klik konten untuk mengubah, seret konten ke tanggal lain untuk menjadwal ulang.
         </p>
       </Card>
 
@@ -271,22 +276,25 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
         <Card>
           <CardTitle>
             <span className="inline-flex items-center gap-2">
-              <Sparkles className="size-4 text-emas" aria-hidden /> Generate ide
+              <FaLightbulb className="size-4 text-emas" aria-hidden /> Generate ide
             </span>
           </CardTitle>
           <div className="space-y-3 text-sm">
             <div>
               <label htmlFor="gen-platform" className="mb-1 block text-xs font-medium">Platform</label>
-              <select
+              <Select
                 id="gen-platform"
+                size="field"
+                corner={8}
+                ariaLabel="Platform"
                 value={gen.platform}
-                onChange={(e) => setGen({ ...gen, platform: e.target.value })}
-                className="w-full rounded-lg border border-tanah-200 bg-krem px-2.5 py-2 dark:border-white/15 dark:bg-white/5"
-              >
-                <option value="both">Instagram + TikTok</option>
-                <option value="instagram">Instagram</option>
-                <option value="tiktok">TikTok</option>
-              </select>
+                onChange={(v) => setGen({ ...gen, platform: v })}
+                options={[
+                  { value: "both", label: "Instagram + TikTok" },
+                  { value: "instagram", label: "Instagram" },
+                  { value: "tiktok", label: "TikTok" },
+                ]}
+              />
             </div>
             <div>
               <label htmlFor="gen-count" className="mb-1 block text-xs font-medium">Jumlah ide</label>
@@ -317,11 +325,10 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
               disabled={generating}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-emas px-3 py-2 text-sm font-semibold text-tanah-900 disabled:opacity-60"
             >
-              {generating ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Sparkles className="size-4" aria-hidden />}
-              Generate untuk <span className="capitalize">{monthLabel}</span>
+              {generating ? <FaSpinner className="size-4 animate-spin" aria-hidden /> : <FaLightbulb className="size-4" aria-hidden />}
+              <span>Generate untuk <span className="capitalize">{monthLabel}</span></span>
             </button>
             {genNote && <p className="text-xs text-ink-soft dark:text-krem/70" role="status">{genNote}</p>}
-            {demo && <p className="text-[11px] text-ink-soft dark:text-krem/60">Mode Demo: ide diambil dari bank ide contoh.</p>}
           </div>
         </Card>
 
@@ -340,8 +347,8 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
                   >
                     <span className="flex items-center gap-1.5 text-[11px] text-ink-soft dark:text-krem/60">
                       <span className="size-2 rounded-full" style={{ background: PLATFORM_STYLE[p.platform].dot }} aria-hidden />
-                      {PLATFORM_STYLE[p.platform].label} · {new Date(p.scheduledAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
-                      {p.createdByAi && " · AI"}
+                      {PLATFORM_STYLE[p.platform].label} - {new Date(p.scheduledAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                      {p.createdByAi && ", AI"}
                     </span>
                     <span className="font-medium">{p.title}</span>
                   </button>
@@ -352,16 +359,19 @@ export function ContentPlanner({ initialPlans, products, demo }: { initialPlans:
         </Card>
       </div>
 
-      {editing && (
-        <PlanDialog
-          draft={editing}
-          products={products}
-          error={error}
-          onClose={() => setEditing(null)}
-          onSave={save}
-          onDelete={editing.id ? () => remove(editing.id!) : undefined}
-        />
-      )}
+      {/* Portaled to <body>: the glass panel's backdrop-filter would otherwise trap this fixed overlay inside it. */}
+      {editing &&
+        createPortal(
+          <PlanDialog
+            draft={editing}
+            products={products}
+            error={error}
+            onClose={() => setEditing(null)}
+            onSave={save}
+            onDelete={editing.id ? () => remove(editing.id!) : undefined}
+          />,
+          document.body,
+        )}
     </div>
   );
 }
@@ -411,7 +421,7 @@ function PlanDialog({
             {draft.id ? "Ubah rencana konten" : "Rencana konten baru"}
           </h2>
           <button type="button" onClick={onClose} aria-label="Tutup" className="grid size-8 place-items-center rounded-lg hover:bg-tanah-50 dark:hover:bg-white/10">
-            <X className="size-4" aria-hidden />
+            <FaXmark className="size-4" aria-hidden />
           </button>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -425,18 +435,30 @@ function PlanDialog({
           </div>
           <div>
             <label htmlFor="pl-platform" className="mb-1 block text-xs font-medium">Platform</label>
-            <select id="pl-platform" value={draft.platform} onChange={(e) => setDraft({ ...draft, platform: e.target.value as ContentPlatform })} className={field}>
-              <option value="instagram">Instagram</option>
-              <option value="tiktok">TikTok</option>
-            </select>
+            <Select
+              id="pl-platform"
+              size="field"
+              corner={8}
+              ariaLabel="Platform"
+              value={draft.platform}
+              onChange={(v) => setDraft({ ...draft, platform: v as ContentPlatform })}
+              options={[
+                { value: "instagram", label: "Instagram" },
+                { value: "tiktok", label: "TikTok" },
+              ]}
+            />
           </div>
           <div>
             <label htmlFor="pl-format" className="mb-1 block text-xs font-medium">Format</label>
-            <select id="pl-format" value={draft.format} onChange={(e) => setDraft({ ...draft, format: e.target.value })} className={field}>
-              {[...new Set([...FORMATS, draft.format])].map((f) => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
+            <Select
+              id="pl-format"
+              size="field"
+              corner={8}
+              ariaLabel="Format"
+              value={draft.format}
+              onChange={(v) => setDraft({ ...draft, format: v })}
+              options={[...new Set([...FORMATS, draft.format])].map((f) => ({ value: f, label: f }))}
+            />
           </div>
           <div>
             <label htmlFor="pl-date" className="mb-1 block text-xs font-medium">Jadwal</label>
@@ -451,29 +473,34 @@ function PlanDialog({
           </div>
           <div>
             <label htmlFor="pl-status" className="mb-1 block text-xs font-medium">Status</label>
-            <select id="pl-status" value={draft.status} onChange={(e) => setDraft({ ...draft, status: e.target.value as ContentStatus })} className={field}>
-              {(Object.keys(STATUS_LABEL) as ContentStatus[]).map((s) => (
-                <option key={s} value={s}>{STATUS_LABEL[s]}</option>
-              ))}
-            </select>
+            <Select
+              id="pl-status"
+              size="field"
+              corner={8}
+              ariaLabel="Status"
+              value={draft.status}
+              onChange={(v) => setDraft({ ...draft, status: v as ContentStatus })}
+              options={(Object.keys(STATUS_LABEL) as ContentStatus[]).map((st) => ({ value: st, label: STATUS_LABEL[st] }))}
+            />
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="pl-product" className="mb-1 block text-xs font-medium">Produk terkait</label>
-            <select id="pl-product" value={draft.productCode ?? ""} onChange={(e) => setDraft({ ...draft, productCode: e.target.value || null })} className={field}>
-              <option value="">Tidak ada</option>
-              {products.map((p) => (
-                <option key={p.code} value={p.code}>{p.code} · {p.name}</option>
-              ))}
-            </select>
+            <Select
+              id="pl-product"
+              size="field"
+              corner={8}
+              ariaLabel="Produk terkait"
+              value={draft.productCode ?? ""}
+              onChange={(v) => setDraft({ ...draft, productCode: v || null })}
+              options={[{ value: "", label: "Tidak ada" }, ...products.map((pr) => ({ value: pr.code, label: `${pr.code} - ${pr.name}` }))]}
+            />
           </div>
         </div>
         {draft.createdByAi && <p className="mt-3 text-xs text-ink-soft dark:text-krem/60">Ide ini dibuat oleh AI. Periksa kembali sebelum diposting.</p>}
         {error && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>}
         <div className="mt-5 flex items-center justify-between gap-2">
           {onDelete ? (
-            <button type="button" onClick={onDelete} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10">
-              <Trash2 className="size-4" aria-hidden /> Hapus
-            </button>
+            <HoldDelete onConfirm={onDelete} />
           ) : (
             <span />
           )}

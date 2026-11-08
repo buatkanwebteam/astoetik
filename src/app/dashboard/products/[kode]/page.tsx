@@ -24,7 +24,7 @@ export default async function ProductUnitsPage(props: PageProps<"/dashboard/prod
   const units = await db.listUnits(product.code);
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="w-full">
       <Link href="/dashboard/products" className="inline-flex items-center gap-1 text-sm text-tanah-600 hover:underline dark:text-emas">
         <ArrowLeft className="size-4" aria-hidden /> Katalog Produk
       </Link>
@@ -35,7 +35,7 @@ export default async function ProductUnitsPage(props: PageProps<"/dashboard/prod
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-mono text-xs text-aksen-text">
-            {product.code} · {CATEGORY_LABEL[product.category]}
+            {product.code} - {CATEGORY_LABEL[product.category]}
           </p>
           <h1 className="mt-1 font-display text-3xl text-tanah-700 dark:text-krem">{product.name}</h1>
           <p className="mt-1 text-sm text-ink-soft dark:text-krem/70">{formatRupiah(product.price)}</p>

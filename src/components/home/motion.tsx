@@ -28,9 +28,9 @@ export function WordReveal({
           key={i}
           aria-hidden
           className="inline-block whitespace-pre"
-          initial={reduce ? false : { opacity: 0.15, filter: "blur(2px)" }}
+          initial={{ opacity: 0.15, filter: "blur(2px)" }}
           animate={inView || reduce ? { opacity: 1, filter: "blur(0px)" } : undefined}
-          transition={{ duration: 0.5, delay: delay + i * 0.06, ease: "easeOut" }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, delay: delay + i * 0.06, ease: "easeOut" }}
         >
           {w}
           {i < words.length - 1 ? " " : ""}
@@ -61,11 +61,12 @@ export function AnimatedCounter({
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
   const reduce = useReducedMotion();
-  const [val, setVal] = useState(reduce ? to : from);
+  const [val, setVal] = useState(from);
 
   useEffect(() => {
-    if (!inView || reduce) return;
-    const c = animate(from, to, { duration: 1.6, ease: "easeOut", onUpdate: setVal });
+    if (!reduce && !inView) return;
+    // Reduced motion jumps straight to the end value; the first render is identical either way.
+    const c = animate(from, to, { duration: reduce ? 0 : 1.6, ease: "easeOut", onUpdate: setVal });
     return () => c.stop();
   }, [inView, reduce, from, to]);
 

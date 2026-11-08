@@ -2,8 +2,9 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
-import { Download, ImagePlus, Plus, Trash2, X } from "lucide-react";
+import { ImagePlus, Plus, Trash2, X } from "lucide-react";
 import type { Product, ProductCategory } from "@/types";
+import { Select } from "@/components/dashboard/Select";
 
 export const PRODUCT_FORM_ID = "product-form";
 
@@ -53,7 +54,7 @@ interface SpecRow {
 }
 
 const input =
-  "h-10 w-full rounded-sm border border-kat-line bg-kat-card px-3 text-sm text-kat-text placeholder:text-kat-muted/70 transition-colors duration-150 focus:border-aksen focus:outline-none disabled:bg-kat-raised disabled:text-kat-muted";
+  "h-10 w-full rounded-sm border border-kat-line bg-kat-card px-3 text-sm text-kat-text placeholder:text-kat-muted/70 transition-colors duration-150 focus:outline-none disabled:bg-kat-raised disabled:text-kat-muted";
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
@@ -80,7 +81,6 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export function ProductForm({
   product,
   categoryLabel,
-  siteUrl,
   onSubmittingChange,
   onSaved,
   onError,
@@ -88,7 +88,6 @@ export function ProductForm({
   /** null = create a new product. */
   product: Product | null;
   categoryLabel: Record<ProductCategory, string>;
-  siteUrl: string;
   onSubmittingChange: (busy: boolean) => void;
   onSaved: (message: string) => void;
   onError: (message: string | null) => void;
@@ -237,13 +236,14 @@ export function ProductForm({
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Kategori">
-            <select className={input} value={category} onChange={(e) => setCategory(e.target.value as ProductCategory)}>
-              {(Object.keys(categoryLabel) as ProductCategory[]).map((c) => (
-                <option key={c} value={c}>
-                  {categoryLabel[c]}
-                </option>
-              ))}
-            </select>
+            <Select
+              ariaLabel="Kategori"
+              size="field"
+              corner={2}
+              value={category}
+              onChange={(v) => setCategory(v as ProductCategory)}
+              options={(Object.keys(categoryLabel) as ProductCategory[]).map((c) => ({ value: c, label: categoryLabel[c] }))}
+            />
           </Field>
           <Field label="Harga (Rp)">
             <input
@@ -336,26 +336,6 @@ export function ProductForm({
         </Field>
       </Section>
 
-      {product && (
-        <Section title="QR code">
-          <div className="flex items-center gap-4">
-            {/* eslint-disable-next-line @next/next/no-img-element -- auth-protected API image */}
-            <img src={`/api/qr/${product.code}`} alt={`QR ${product.code}`} className="size-28 rounded-sm border border-kat-line bg-white p-1" />
-            <div className="min-w-0 space-y-2">
-              <p className="break-all font-mono text-[11px] text-kat-muted">
-                {siteUrl}/p/{product.code}?src=qr
-              </p>
-              <a
-                href={`/api/qr/${product.code}?download=1`}
-                className="inline-flex h-9 items-center gap-1.5 rounded-sm border border-kat-line px-3 text-sm text-kat-text transition-colors duration-150 hover:border-kat-muted"
-              >
-                <Download className="size-4" aria-hidden />
-                Unduh PNG
-              </a>
-            </div>
-          </div>
-        </Section>
-      )}
     </form>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { FaMoon, FaSun } from "react-icons/fa6";
 import { useEffect, useSyncExternalStore } from "react";
 
 const KEY = "astera-theme";
@@ -32,9 +32,9 @@ export function ThemeToggle() {
         }
       }}
       aria-label={dark ? "Gunakan mode terang" : "Gunakan mode gelap"}
-      className="grid size-9 place-items-center rounded-lg text-ink-soft hover:bg-tanah-100 dark:text-krem/80 dark:hover:bg-white/10"
+      className="grid size-10 place-items-center rounded-full bg-tanah-50 text-ink-soft transition hover:bg-tanah-100 dark:bg-white/10 dark:text-krem/80 dark:hover:bg-white/20"
     >
-      {dark ? <Sun className="size-4" aria-hidden /> : <Moon className="size-4" aria-hidden />}
+      {dark ? <FaSun className="size-4" aria-hidden /> : <FaMoon className="size-4" aria-hidden />}
     </button>
   );
 }

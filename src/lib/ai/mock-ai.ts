@@ -10,7 +10,6 @@ export function mockAdvisor(s: AdvisorSnapshot): AdvisorResult {
   const plats = [...s.perPlatform];
   const byEr = [...plats].sort((a, b) => b.engagementRate - a.engagementRate);
   const byClick = [...plats].sort((a, b) => a.clickRate - b.clickRate);
-  const byBuy = [...plats].sort((a, b) => b.purchaseRate - a.purchaseRate);
   const formats = [...s.byFormat].sort((a, b) => b.engagementRate - a.engagementRate);
   const top = s.topPosts[0];
   const er = s.totals.impressions ? s.totals.engagement / s.totals.impressions : 0;
@@ -48,22 +47,22 @@ export function mockAdvisor(s: AdvisorSnapshot): AdvisorResult {
       priority: 4,
       title: "Buat seri lanjutan konten terbaik",
       platform: top.platform,
-      reason: `"${top.title}" menghasilkan ${formatNumber(top.engagement)} engagement dan ${formatNumber(top.purchases)} purchase.`,
+      reason: `"${top.title}" menghasilkan ${formatNumber(top.engagement)} engagement dan ${formatNumber(top.clicks)} klik.`,
       action: "Buat bagian 2 dengan sudut berbeda (kesalahan umum pemula) dan sematkan di profil.",
     });
   }
-  if (byBuy[0]) {
+  if (s.onlineShop.marketplaceClicks > 0) {
     recs.push({
       priority: 5,
-      title: `Manfaatkan konversi tinggi ${byBuy[0].platform}`,
-      platform: byBuy[0].platform,
-      reason: `${byBuy[0].platform} mengubah ${formatPercent(byBuy[0].purchaseRate)} klik menjadi purchase, tertinggi di antara platform.`,
-      action: "Arahkan traffic dari konten lain ke toko ini dan siapkan voucher khusus follower.",
+      title: "Dorong traffic ke Shopee",
+      platform: "Shopee",
+      reason: `Shopee mencatat ${formatNumber(s.onlineShop.purchases)} purchase dari ${formatNumber(s.onlineShop.marketplaceClicks)} klik (konversi ${formatPercent(s.onlineShop.conversion)}).`,
+      action: "Arahkan traffic dari konten sosmed ke toko ini dan siapkan voucher khusus follower.",
     });
   }
 
   return {
-    summary: `Dalam ${s.periodDays} hari terakhir tercatat ${formatNumber(s.totals.impressions)} impression dengan engagement rate ${formatPercent(er, 2)} dan ${formatNumber(s.totals.purchases)} purchase. Funnel terbesar bocor di tahap engagement ke profile visit.`,
+    summary: `Dalam ${s.periodDays} hari terakhir tercatat ${formatNumber(s.totals.impressions)} impression dengan engagement rate ${formatPercent(er, 2)} dan ${formatNumber(s.onlineShop.purchases)} purchase dari online shop. Funnel terbesar bocor di tahap engagement ke profile visit.`,
     recommendations: recs.slice(0, 5),
   };
 }
@@ -121,4 +120,30 @@ export function mockInsights(messages: Pick<ChatMessage, "content">[]): Insights
       action: TOPIC_RULES.find((r) => r.topic === topic)?.action ?? "Tinjau pertanyaan ini dan pertimbangkan menambah FAQ baru.",
     }));
   return { topics };
+}
+
+/** Demo-mode answer for the dashboard AI Advisor chat. Deterministic, reads the same snapshot as Gemini. */
+export function mockAdvisorChat(s: AdvisorSnapshot, question: string): string {
+  const q = question.toLowerCase();
+  const rec = mockAdvisor(s);
+  const formats = [...s.byFormat].sort((a, b) => b.engagementRate - a.engagementRate);
+  const plats = [...s.perPlatform].sort((a, b) => b.engagementRate - a.engagementRate);
+
+  if (/rekomendasi|saran|prioritas|harus|sebaiknya|strategi/.test(q)) {
+    return `${rec.summary}\n\n${rec.recommendations.map((r) => `${r.priority}. ${r.title}\nAlasan: ${r.reason}\nAksi: ${r.action}`).join("\n\n")}`;
+  }
+  if (/format|reel|carousel|video|live/.test(q) && formats.length) {
+    return `Format dengan engagement rate tertinggi: ${formats.map((f) => `${f.format} ${formatPercent(f.engagementRate, 2)} (${f.posts} konten)`).join(", ")}.\n\nPrioritaskan ${formats[0].format} pekan ini.`;
+  }
+  if (/funnel|konversi|bocor|journey/.test(q)) {
+    return `Funnel ${s.periodDays} hari terakhir:\n${s.funnel.map((st) => `- ${st.stage}: ${formatNumber(st.value)}${st.conversionFromPrev ? ` (${formatPercent(st.conversionFromPrev)} dari tahap sebelumnya)` : ""}`).join("\n")}`;
+  }
+  if (/purchase|jual|penjualan|shopee|beli|online shop|toko/.test(q)) {
+    const o = s.onlineShop;
+    return `${o.platform} mencatat ${formatNumber(o.purchases)} purchase dari ${formatNumber(o.marketplaceClicks)} klik marketplace, konversi ${formatPercent(o.conversion)}. Purchase dihitung hanya dari online shop, bukan dari media sosial.`;
+  }
+  if (/platform|tiktok|instagram|youtube|sosmed|media sosial|channel/.test(q) && plats.length) {
+    return `Performa media sosial ${s.periodDays} hari terakhir:\n${plats.map((p) => `- ${p.platform}: ${formatNumber(p.impressions)} impression, engagement rate ${formatPercent(p.engagementRate, 2)}`).join("\n")}\n\n${plats[0].platform} paling engaging.`;
+  }
+  return `${rec.summary}\n\nKamu bisa tanya soal rekomendasi prioritas, platform terbaik, format konten, funnel, atau penjualan di Shopee.`;
 }

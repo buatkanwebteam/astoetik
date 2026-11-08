@@ -2,7 +2,7 @@ import { z } from "zod";
 import { requireApiSession } from "@/lib/auth/session";
 import { isGeminiEnabled } from "@/lib/env";
 import { getDb } from "@/lib/db";
-import { AiError, generateJson } from "@/lib/ai/gemini";
+import { generateJson } from "@/lib/ai/gemini";
 import { contentIdeasSchema, type ContentIdeas } from "@/lib/ai/schemas";
 import { CONTENT_SYSTEM } from "@/lib/ai/prompts";
 import { mockContentIdeas } from "@/lib/ai/mock-ai";
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
   const db = getDb();
   const products = await db.listProducts();
   let ideas: ContentIdeas;
+  let demo = !isGeminiEnabled;
 
   if (!isGeminiEnabled) {
     ideas = mockContentIdeas({ platforms, count, seed: (mon + year) % 10, products });
@@ -49,9 +50,10 @@ export async function POST(req: Request) {
           .filter(Boolean)
           .join("\n\n"),
       });
-    } catch (err) {
-      const message = err instanceof AiError ? err.message : "Gagal memanggil AI.";
-      return Response.json({ error: message }, { status: 502 });
+    } catch {
+      // Gemini unavailable: use the built-in idea bank instead.
+      ideas = mockContentIdeas({ platforms, count, seed: (mon + year) % 10, products });
+      demo = true;
     }
   }
 
@@ -80,5 +82,5 @@ export async function POST(req: Request) {
     }));
 
   const created = await db.createContentPlans(rows);
-  return Response.json({ demo: !isGeminiEnabled, plans: created });
+  return Response.json({ demo, plans: created });
 }

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { getDb } from "@/lib/db";
 import { isGeminiEnabled } from "@/lib/env";
 import { buildProductContext, chatSystemPrompt } from "@/lib/ai/prompts";
-import { streamChat } from "@/lib/ai/gemini";
+import { streamChat, withFallback } from "@/lib/ai/gemini";
 import { mockChatAnswer } from "@/lib/ai/mock-chat";
 import { clientIp, rateLimit } from "@/lib/ratelimit";
 import { MANUAL_EXCERPTS } from "@/data/manuals";
@@ -81,13 +81,17 @@ export async function POST(req: Request) {
   await db.ensureChatSession(sessionId, product.code);
   await db.addChatMessage({ sessionId, productCode: product.code, role: "user", content: message });
 
+  const local = () => mockStream(mockChatAnswer(product, faqs, message));
   const gen = isGeminiEnabled
-    ? streamChat({
+    ? withFallback(
+        streamChat({
         system: chatSystemPrompt(buildProductContext(product, faqs, MANUAL_EXCERPTS[product.code])),
         history: history.map((h) => ({ role: h.role, content: sanitize(h.content) })),
         message,
-      })
-    : mockStream(mockChatAnswer(product, faqs, message));
+      }),
+        local,
+      )
+    : local();
 
   const stream = textStream(gen, async (full) => {
     if (full.trim()) {

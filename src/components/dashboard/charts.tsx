@@ -37,14 +37,14 @@ function shortDate(d: string) {
 
 export function TrendChart({ data, platforms }: { data: DailyPoint[]; platforms: SocialPlatform[] }) {
   return (
-    <div className="h-72 w-full">
+    <div className="h-full min-h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ left: -10, right: 8, top: 8 }}>
           <defs>
             {platforms.map((p) => (
               <linearGradient key={p} id={`fill-${p}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={PLATFORM_META[p].color} stopOpacity={0.35} />
-                <stop offset="100%" stopColor={PLATFORM_META[p].color} stopOpacity={0.02} />
+                <stop offset="0%" stopColor={PLATFORM_META[p].color} stopOpacity={0.22} />
+                <stop offset="100%" stopColor={PLATFORM_META[p].color} stopOpacity={0.01} />
               </linearGradient>
             ))}
           </defs>
@@ -62,12 +62,38 @@ export function TrendChart({ data, platforms }: { data: DailyPoint[]; platforms:
               key={p}
               type="monotone"
               dataKey={p}
-              stackId="1"
               stroke={PLATFORM_META[p].color}
               fill={`url(#fill-${p})`}
               strokeWidth={2}
             />
           ))}
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+/** Single-series area for the hero card: no axes, tooltip carries the date and value. */
+export function HeroChart({ data }: { data: { date: string; value: number }[] }) {
+  return (
+    <div className="h-36 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
+          <defs>
+            <linearGradient id="fill-hero" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#8c5a2f" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="#8c5a2f" stopOpacity={0.02} />
+            </linearGradient>
+          </defs>
+          <XAxis dataKey="date" hide />
+          <YAxis hide domain={["dataMin", "dataMax"]} />
+          <Tooltip
+            {...tooltipStyle}
+            cursor={{ stroke: "#6b3f1d", strokeDasharray: "3 3" }}
+            labelFormatter={(l) => new Date(String(l)).toLocaleDateString("id-ID", { dateStyle: "medium" })}
+            formatter={(v) => [formatNumber(Number(v)), "Impression"]}
+          />
+          <Area type="monotone" dataKey="value" stroke="#6b3f1d" strokeWidth={2} fill="url(#fill-hero)" activeDot={{ r: 5, fill: "#6b3f1d", stroke: "#fff", strokeWidth: 2 }} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

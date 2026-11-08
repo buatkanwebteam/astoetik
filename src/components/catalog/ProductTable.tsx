@@ -60,7 +60,7 @@ export function ProductTable({
               </td>
               <td className={`${td} text-kat-muted`}>{i.control ?? "–"}</td>
               <td className={`${td} whitespace-nowrap text-xs text-kat-muted`}>
-                {[i.sni ? "SNI" : null, i.tkdn ? `TKDN ${i.tkdn}` : null].filter(Boolean).join(" · ") || "–"}
+                {[i.sni ? "SNI" : null, i.tkdn ? `TKDN ${i.tkdn}` : null].filter(Boolean).join(", ") || "–"}
               </td>
               <td className={`${td} whitespace-nowrap text-right font-mono tabular-nums text-kat-text`}>{formatRupiah(i.price)}</td>
               <td className={td}>

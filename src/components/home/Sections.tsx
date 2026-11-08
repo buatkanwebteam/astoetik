@@ -50,7 +50,7 @@ export function AboutPanel({ products }: { products: Product[] }) {
 
       <div className="hidden gap-4 md:grid md:grid-cols-2">
         {/* Kartu 1: Product Passport */}
-        <div className="relative h-[min(30vh,280px)] overflow-hidden rounded-3xl border border-[#d4af37]/35 bg-gradient-to-br from-[#4a3220] via-[#3d2a1c] to-[#2b1d13] p-5 text-white shadow-[0_18px_40px_-14px_rgba(43,29,19,.65),inset_0_1px_0_rgba(255,255,255,.12)]">
+        <div className="relative h-[clamp(240px,32vh,280px)] overflow-hidden rounded-3xl border border-[#d4af37]/35 bg-gradient-to-br from-[#4a3220] via-[#3d2a1c] to-[#2b1d13] p-5 text-white shadow-[0_18px_40px_-14px_rgba(43,29,19,.65),inset_0_1px_0_rgba(255,255,255,.12)]">
           <div className="pointer-events-none absolute inset-0 opacity-[.07] mix-blend-screen" style={FABRIC_TEXTURE} aria-hidden />
           <ParangCorner className="-right-2 -top-2 size-36 opacity-30" />
           <InnerBorder />
@@ -75,7 +75,7 @@ export function AboutPanel({ products }: { products: Product[] }) {
         </div>
 
         {/* Kartu 2: Tanya ASKA */}
-        <div className="relative h-[min(30vh,280px)] overflow-hidden rounded-3xl border border-[#d4af37]/35 bg-gradient-to-b from-[#3d2a1c] via-[#31221a] to-[#261a11] p-5 text-white shadow-[0_18px_40px_-14px_rgba(38,26,17,.7),inset_0_1px_0_rgba(255,255,255,.12)]">
+        <div className="relative h-[clamp(240px,32vh,280px)] overflow-hidden rounded-3xl border border-[#d4af37]/35 bg-gradient-to-b from-[#3d2a1c] via-[#31221a] to-[#261a11] p-5 text-white shadow-[0_18px_40px_-14px_rgba(38,26,17,.7),inset_0_1px_0_rgba(255,255,255,.12)]">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_70%_at_50%_0%,rgba(212,175,55,.14),transparent_60%)]" aria-hidden />
           <div className="pointer-events-none absolute inset-0 opacity-[.07] mix-blend-screen" style={FABRIC_TEXTURE} aria-hidden />
           <MegaWave className="-bottom-2 -left-2 h-32 w-48 opacity-35" />
@@ -93,8 +93,8 @@ export function AboutPanel({ products }: { products: Product[] }) {
               <p className="mt-1.5 rounded-lg bg-hm-gold px-2 py-1.5 text-[11px] text-hm-deep">Cek dulu kabel dan stop kontak…</p>
             </div>
             <div className="absolute inset-x-0 bottom-0">
-              <p className="text-lg leading-tight tracking-tight">Tanya ASKA, Asisten yang paham</p>
-              <span className="mt-1 inline-block rounded-md bg-hm-gold px-2 py-0.5 text-lg leading-tight tracking-tight text-black">Produk yang anda pakai</span>
+              <p className="text-[15px] leading-tight tracking-tight xl:text-lg">Tanya ASKA, Asisten yang paham</p>
+              <span className="mt-1 inline-block rounded-md bg-hm-gold px-2 py-0.5 text-[15px] leading-tight tracking-tight text-black xl:text-lg">Produk yang anda pakai</span>
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@ const NEEDS = [
   { t: "Produk saya bermasalah", d: "Tanya ASKA", href: "#aska", Icon: FaLifeRing },
   { t: "Saya ingin mengenal produk", d: "Buka panduan", href: "#panduan", Icon: FaBookOpen },
 ];
-const cardTitle = "font-display text-2xl font-medium tracking-tight";
+const cardTitle = "font-display text-xl font-medium tracking-tight md:text-2xl";
 
 export function Needs({ products }: { products: Product[] }) {
   const kompor = products.filter((p) => p.category !== "canting").length;
@@ -147,20 +147,20 @@ export function Needs({ products }: { products: Product[] }) {
     { l: "Canting", n: canting, c: "bg-white/80" },
   ];
   return (
-    <section id="kebutuhan" className="flex min-h-[calc(100vh+33px)] w-full flex-col bg-[#261a11] bg-[url(/home/batik-coklat.jpg)] bg-cover bg-center pb-12 pt-[clamp(2.5rem,8vh,5rem)] text-white">
+    <section id="kebutuhan" className="flex min-h-[calc(100vh+33px)] w-full flex-col bg-[#261a11] bg-[url(/home/batik-coklat.jpg)] bg-cover bg-center pb-8 pt-[clamp(2.5rem,8vh,5rem)] text-white md:pb-12">
       <WordReveal
         text="Mulai dari kebutuhan Anda"
-        className="px-4 text-center font-display text-4xl font-medium leading-[1.05] tracking-[-0.03em] md:text-6xl"
+        className="px-4 text-center font-display text-3xl font-medium leading-[1.05] tracking-[-0.03em] sm:text-4xl md:text-6xl"
       />
-      <div className={`${wrapW} my-auto pt-10`}>
-        <div className="grid gap-6 md:grid-cols-3">
-          <GlossCard bubbles="a" inner="p-6" className="min-h-[440px]">
+      <div className={`${wrapW} my-auto pt-6 md:pt-10`}>
+        <div className="grid gap-3 md:grid-cols-3 md:gap-6">
+          <GlossCard bubbles="a" inner="p-4 md:p-6" className="md:min-h-[440px]">
             <h3 className={cardTitle}>Apa yang Anda cari?</h3>
-            <ul className="mt-5 space-y-2.5">
+            <ul className="mt-3 space-y-2 md:mt-5 md:space-y-2.5">
               {NEEDS.map(({ t, d, href, Icon }) => (
                 <li key={t}>
-                  <a href={href} className="group flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/20 transition hover:bg-white/20">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-hm-gold/90 text-hm-deep">
+                  <a href={href} className="group flex items-center gap-3 rounded-2xl bg-white/10 px-3 py-2 ring-1 ring-white/20 transition hover:bg-white/20 md:px-4 md:py-3">
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-hm-gold/90 text-hm-deep md:size-9">
                       <Icon className="size-4" aria-hidden />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -172,7 +172,7 @@ export function Needs({ products }: { products: Product[] }) {
                 </li>
               ))}
             </ul>
-            <div className="mt-auto pt-5">
+            <div className="mt-auto pt-3 md:pt-5">
               <Marquee
                 items={TAGS_A}
                 render={(s, i) => (
@@ -189,30 +189,30 @@ export function Needs({ products }: { products: Product[] }) {
             </div>
           </GlossCard>
 
-          <GlossCard bubbles="b" className="min-h-[440px]">
+          <GlossCard bubbles="b" inner="p-4 md:p-8" className="md:min-h-[440px]">
             <h3 className={cardTitle}>Produk Kami</h3>
-            <p className="mt-3 text-base leading-snug text-white/80">
+            <p className="mt-2 text-sm leading-snug text-white/80 md:mt-3 md:text-base">
               Kompor dan canting batik listrik buatan Astoetik, lengkap dengan spesifikasi dan harga. Mulai dari {formatRupiah(minPrice)}.
             </p>
-            <div className="mt-5 flex -space-x-3">
+            <div className="mt-3 flex -space-x-3 md:mt-5">
               {thumbs.map((p) => (
-                <span key={p.code} className="relative size-14 overflow-hidden rounded-full bg-white ring-2 ring-white/60">
+                <span key={p.code} className="relative size-11 overflow-hidden rounded-full bg-white ring-2 ring-white/60 md:size-14">
                   <Image src={p.image} alt={p.name} fill sizes="56px" className="object-cover" />
                 </span>
               ))}
             </div>
-            <div className="mt-auto rounded-2xl bg-white/10 p-5 ring-1 ring-white/20">
+            <div className="mt-4 rounded-2xl bg-white/10 p-3 ring-1 ring-white/20 md:mt-auto md:p-5">
               <p className="text-sm text-white/70">Pilihan produk</p>
-              <p className="mt-1 text-4xl font-medium tracking-tight">
+              <p className="mt-1 text-3xl font-medium tracking-tight md:text-4xl">
                 <AnimatedCounter to={products.length} />
                 <span className="ml-2 text-sm font-normal text-white/70">model</span>
               </p>
-              <div className="mt-4 flex h-3 gap-1 overflow-hidden rounded-full">
+              <div className="mt-3 flex h-2.5 gap-1 overflow-hidden rounded-full md:mt-4 md:h-3">
                 {segs.map((s) => (
                   <div key={s.l} className={`${s.c} rounded-full`} style={{ width: `${(s.n / total) * 100}%` }} />
                 ))}
               </div>
-              <div className="mt-3 flex gap-5 text-xs text-white/75">
+              <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-white/75 md:mt-3">
                 {segs.map((s) => (
                   <span key={s.l} className="flex items-center gap-1.5">
                     <i className={`size-2 rounded-full ${s.c}`} />
@@ -225,7 +225,8 @@ export function Needs({ products }: { products: Product[] }) {
 
           <GlossCard
             bubbles="c"
-            className="min-h-[440px]"
+            inner="p-4 md:p-8"
+            className="min-h-[170px] md:min-h-[440px]"
             back={
               <>
                 {cover && <Image src={cover.image} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-40 mix-blend-luminosity" />}
@@ -234,7 +235,7 @@ export function Needs({ products }: { products: Product[] }) {
             }
           >
             <h3 className={cardTitle}>Bantuan setelah membeli</h3>
-            <p className="mt-auto text-base leading-snug text-white/90">
+            <p className="mt-auto pt-6 text-sm leading-snug text-white/90 md:pt-0 md:text-base">
               Ada kendala dengan produk Anda? Tanya ASKA. Kalau belum terjawab, tim Astoetik siap membantu langsung.
             </p>
           </GlossCard>
@@ -251,7 +252,7 @@ export function ProductShelf({ products }: { products: Product[] }) {
       className="flex h-[calc(100vh+33px)] min-h-[600px] w-full flex-col overflow-hidden bg-hm-sand/50 bg-[url(/home/batik-krem.jpg)] bg-cover bg-center pb-6 pt-[clamp(1.5rem,5vh,3.5rem)]"
     >
       <div className={`${wrapW} flex min-h-0 flex-1 flex-col`}>
-        <WordReveal text="Produk dan teknologi untuk membatik" className={`${h2} mb-5 text-center !text-[clamp(1.75rem,4.5vh,3rem)]`} />
+        <WordReveal text="Produk dan teknologi untuk membatik" className={`${h2} mb-3 text-center !text-[clamp(1.5rem,4.5vh,3rem)] md:mb-5`} />
         <ProductCollection products={products} />
       </div>
     </section>
@@ -332,7 +333,7 @@ export function Footer() {
           <div>
             <p className="font-display text-2xl font-semibold tracking-[0.14em]">ASTOETIK</p>
             <p className="mt-2 max-w-sm text-sm text-white/70">
-              ASTERA-X memperluas pengalaman Astoetik dari produk fisik menuju panduan, bantuan, layanan, dan wawasan digital yang terhubung.
+              Astoetik memperluas pengalaman dari produk fisik menuju panduan, bantuan, layanan, dan wawasan digital yang terhubung.
             </p>
             <a href="#tentang" className="mt-3 inline-block text-sm underline underline-offset-4">
               Tentang kami

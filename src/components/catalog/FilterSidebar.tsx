@@ -181,7 +181,7 @@ function PriceRange({
               step={PRICE_STEP}
               value={value}
               onChange={(e) => set(Number(e.target.value))}
-              className="w-full rounded-sm border border-kat-line bg-kat-card px-2.5 py-2 font-mono text-sm tabular-nums text-kat-text transition-colors duration-150 focus:border-aksen focus:outline-none"
+              className="w-full rounded-sm border border-kat-line bg-kat-card px-2.5 py-2 font-mono text-sm tabular-nums text-kat-text transition-colors duration-150 focus:outline-none"
             />
           </label>
         ))}

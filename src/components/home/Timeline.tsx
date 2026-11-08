@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { motion, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
 
 // Sumber: infografis "10 Tahun Perjalanan Astoetik" (referensi_website.html#about-history).
 interface Stop {
@@ -117,7 +117,6 @@ function StaticList() {
 }
 
 export function Timeline({ about }: { about?: ReactNode }) {
-  const reduce = useReducedMotion();
   const outer = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const [shift, setShift] = useState(0);
@@ -139,17 +138,18 @@ export function Timeline({ about }: { about?: ReactNode }) {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [reduce]);
+  }, []);
 
-  if (reduce) return (
-      <div id="tentang">
-        {about}
-        <StaticList />
-      </div>
-    );
-
+  // The pinned, one-screen layout needs room: 1024px wide and at least 640px tall, and motion allowed.
+  // Everything else (phones, tablets, short windows, reduced motion) gets the plain stacked layout.
+  // It is all CSS, so server and client render identical markup and nothing flashes or mismatches.
   return (
-    <section id="tentang" ref={outer} className="relative h-[430vh] w-full bg-[#fbf6ee] text-hm-deep">
+    <div id="tentang">
+    <div className="[@media(min-width:1024px)_and_(min-height:640px)]:hidden motion-reduce:block!">
+      {about}
+      <StaticList />
+    </div>
+    <section ref={outer} className="relative hidden h-[430vh] w-full bg-[#fbf6ee] text-hm-deep [@media(min-width:1024px)_and_(min-height:640px)]:block motion-reduce:hidden!">
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#fbf6ee] bg-[url(/home/batik-bg.jpg)] bg-cover bg-center">
         <div className="absolute inset-x-0 top-0 z-20 h-1 bg-hm-dark/10">
           <motion.div className="h-full bg-hm-mid" style={{ width: bar }} />
@@ -209,5 +209,6 @@ export function Timeline({ about }: { about?: ReactNode }) {
         <Canting progress={progress} />
       </div>
     </section>
+    </div>
   );
 }

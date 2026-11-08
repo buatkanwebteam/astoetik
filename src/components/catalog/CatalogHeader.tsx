@@ -1,28 +1,23 @@
 "use client";
 
-import { ArrowUpDown, ChevronDown, LayoutGrid, Rows3, Search, SlidersHorizontal, X } from "lucide-react";
+import { LayoutGrid, Rows3, Search, SlidersHorizontal, X } from "lucide-react";
 import { SORT_LABEL, type SortKey } from "@/lib/catalog";
+import { Select } from "@/components/dashboard/Select";
 
 export type CatalogView = "grid" | "table";
 
 export function SortDropdown({ value, onChange }: { value: SortKey; onChange: (s: SortKey) => void }) {
   return (
-    <label className="relative flex items-center">
-      <span className="sr-only">Urutkan</span>
-      <ArrowUpDown className="pointer-events-none absolute left-3 size-4 text-kat-muted" aria-hidden />
-      <select
+    <div className="w-56">
+      <Select
+        ariaLabel="Urutkan"
+        size="field"
+        corner={2}
         value={value}
-        onChange={(e) => onChange(e.target.value as SortKey)}
-        className="h-10 appearance-none rounded-sm border border-kat-line bg-kat-card pl-9 pr-9 text-sm text-kat-text transition-colors duration-150 hover:border-kat-muted focus:border-aksen focus:outline-none"
-      >
-        {(Object.keys(SORT_LABEL) as SortKey[]).map((k) => (
-          <option key={k} value={k}>
-            {SORT_LABEL[k]}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-3 size-4 text-kat-muted" aria-hidden />
-    </label>
+        onChange={(v) => onChange(v as SortKey)}
+        options={(Object.keys(SORT_LABEL) as SortKey[]).map((k) => ({ value: k, label: SORT_LABEL[k] }))}
+      />
+    </div>
   );
 }
 
@@ -69,7 +64,7 @@ export function CatalogToolbar({
             onChange={(e) => onQuery(e.target.value)}
             placeholder="Cari nama, kode, atau bahan"
             autoComplete="off"
-            className="h-10 w-full rounded-sm border border-kat-line bg-kat-card pl-9 pr-10 text-sm text-kat-text placeholder:text-kat-muted transition-colors duration-150 hover:border-kat-muted focus:border-aksen focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+            className="h-10 w-full rounded-sm border border-kat-line bg-kat-card pl-9 pr-10 text-sm text-kat-text placeholder:text-kat-muted transition-colors duration-150 hover:border-kat-muted focus:outline-none [&::-webkit-search-cancel-button]:hidden"
           />
           {query && (
             <button
@@ -96,7 +91,7 @@ export function CatalogToolbar({
           )}
         </button>
         <SortDropdown value={sort} onChange={onSort} />
-        <div className="flex rounded-sm border border-kat-line bg-kat-card p-0.5" role="group" aria-label="Mode tampilan">
+        <div className="hidden rounded-sm border border-kat-line bg-kat-card p-0.5 lg:flex" role="group" aria-label="Mode tampilan">
           {views.map(([v, label, Icon]) => (
             <button
               key={v}

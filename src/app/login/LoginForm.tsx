@@ -1,27 +1,30 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { LogIn } from "lucide-react";
 import { login, type LoginState } from "./actions";
 
-export function LoginForm({ next, demoHint }: { next: string; demoHint: { email: string; password: string } | null }) {
+export function LoginForm({ next }: { next: string }) {
   const [state, action, pending] = useActionState<LoginState, FormData>(login, { error: null });
+  // Controlled so a failed attempt (React resets uncontrolled fields) does not wipe the username.
+  const [username, setUsername] = useState("");
 
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="next" value={next} />
       <div>
         <label htmlFor="email" className="mb-1 block text-sm font-medium text-ink">
-          Email
+          Username
         </label>
         <input
           id="email"
           name="email"
-          type="email"
+          type="text"
           autoComplete="username"
           required
-          defaultValue={demoHint?.email}
-          className="block w-full rounded-xl border border-tanah-200 bg-krem px-3 py-2.5 text-sm text-ink focus:border-emas focus:outline-none"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="block w-full rounded-xl border border-tanah-200 bg-krem px-3 py-2.5 text-sm text-ink focus:outline-none"
         />
       </div>
       <div>
@@ -34,7 +37,7 @@ export function LoginForm({ next, demoHint }: { next: string; demoHint: { email:
           type="password"
           autoComplete="current-password"
           required
-          className="block w-full rounded-xl border border-tanah-200 bg-krem px-3 py-2.5 text-sm text-ink focus:border-emas focus:outline-none"
+          className="block w-full rounded-xl border border-tanah-200 bg-krem px-3 py-2.5 text-sm text-ink focus:outline-none"
         />
       </div>
       {state.error && (
@@ -50,11 +53,6 @@ export function LoginForm({ next, demoHint }: { next: string; demoHint: { email:
         <LogIn className="size-4" aria-hidden />
         {pending ? "Memeriksa…" : "Masuk"}
       </button>
-      {demoHint && (
-        <p className="rounded-lg bg-emas-soft/60 px-3 py-2 text-xs text-tanah-800">
-          <strong>Mode Demo.</strong> Gunakan <code>{demoHint.email}</code> / <code>{demoHint.password}</code>
-        </p>
-      )}
     </form>
   );
 }

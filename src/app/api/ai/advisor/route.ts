@@ -2,7 +2,7 @@ import { requireApiSession } from "@/lib/auth/session";
 import { isGeminiEnabled } from "@/lib/env";
 import { advisorSnapshot, parseFilters } from "@/lib/analytics";
 import { loadWindow } from "@/lib/dashboard-data";
-import { AiError, generateJson } from "@/lib/ai/gemini";
+import { generateJson } from "@/lib/ai/gemini";
 import { advisorSchema } from "@/lib/ai/schemas";
 import { ADVISOR_SYSTEM } from "@/lib/ai/prompts";
 import { mockAdvisor } from "@/lib/ai/mock-ai";
@@ -26,8 +26,8 @@ export async function POST(req: Request) {
     });
     result.recommendations.sort((a, b) => a.priority - b.priority);
     return Response.json({ demo: false, result });
-  } catch (err) {
-    const message = err instanceof AiError ? err.message : "Gagal memanggil AI.";
-    return Response.json({ error: message }, { status: 502 });
+  } catch {
+    // Gemini unavailable: answer from the same snapshot locally.
+    return Response.json({ demo: true, result: mockAdvisor(snapshot) });
   }
 }

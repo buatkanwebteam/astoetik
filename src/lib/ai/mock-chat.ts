@@ -32,7 +32,7 @@ export function mockChatAnswer(product: Product, faqs: ProductFaq[], question: s
     return `Maaf, saya hanya bisa membantu pertanyaan seputar ${product.name}. Ada yang ingin ditanyakan tentang produk ini?`;
   }
   if (!PRODUCT_HINT.test(q)) {
-    return `Maaf, saya hanya bisa menjawab pertanyaan tentang ${product.name} (${product.code}). Silakan tanya soal spesifikasi, cara pakai, atau perawatannya.`;
+    return `Maaf, saya hanya bisa menjawab pertanyaan tentang ${product.name}. Silakan tanya soal spesifikasi, cara pakai, atau perawatannya.`;
   }
   if (/(garansi|stok|ongkir|kirim|diskon|promo|cicil)/i.test(q)) {
     return "Untuk info stok, garansi, ongkir, dan promo, saya belum punya datanya. Silakan hubungi CS Astoetik lewat tombol WhatsApp di bawah, ya.";

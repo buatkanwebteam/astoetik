@@ -19,14 +19,13 @@ export interface CatalogItem {
 
 export type Certification = "sni" | "tkdn";
 
-export type SortKey = "featured" | "price-asc" | "price-desc" | "name-asc" | "watt-desc";
+export type SortKey = "featured" | "price-asc" | "price-desc" | "name-asc";
 
 export const SORT_LABEL: Record<SortKey, string> = {
   featured: "Unggulan",
   "price-asc": "Harga: rendah ke tinggi",
   "price-desc": "Harga: tinggi ke rendah",
   "name-asc": "Nama: A–Z",
-  "watt-desc": "Daya terbesar",
 };
 
 export const CERT_LABEL: Record<Certification, string> = {
@@ -157,8 +156,6 @@ export function applyCatalog(
       return result.sort((a, b) => b.price - a.price || byName(a, b));
     case "name-asc":
       return result.sort(byName);
-    case "watt-desc":
-      return result.sort((a, b) => (b.watt ?? 0) - (a.watt ?? 0) || a.price - b.price);
     default:
       return result;
   }

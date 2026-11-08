@@ -1,37 +1,66 @@
-import { ArrowDown } from "lucide-react";
+import type { IconType } from "react-icons";
+import { FaArrowDown, FaCartShopping, FaEye, FaHandPointer, FaHeart, FaUser } from "react-icons/fa6";
 import type { FunnelStage } from "@/lib/analytics";
-import { formatNumber, formatPercent } from "@/lib/format";
+import { formatPercent } from "@/lib/format";
+import { CountUp } from "./fx";
 
 // Fixed tapering widths keep every stage visible and readable; the real
 // values and conversion rates sit in the labels.
-const WIDTHS = [100, 93, 86, 79, 72];
-const SHADES = ["#57321a", "#6b3f1d", "#8c5a2f", "#c8923b", "#e0b56e"];
+const WIDTHS = [100, 94, 88, 82, 76];
+const GRADIENTS = [
+  ["#3e2414", "#6b3f1d"],
+  ["#57321a", "#8c5a2f"],
+  ["#6b3f1d", "#ae7646"],
+  ["#b07a2a", "#e0b56e"],
+  ["#d8a24a", "#f3dc9e"],
+];
+const ICONS: IconType[] = [FaEye, FaHeart, FaUser, FaHandPointer, FaCartShopping];
 
 export function Funnel({ stages }: { stages: FunnelStage[] }) {
+  const last = stages.at(-1);
+
   return (
-    <ol className="space-y-1" aria-label="Customer journey funnel">
-      {stages.map((s, i) => (
-        <li key={s.key}>
-          {s.fromPrev !== null && (
-            <p className="flex items-center justify-center gap-1 py-0.5 text-[11px] text-ink-soft dark:text-krem/60">
-              <ArrowDown className="size-3" aria-hidden />
-              konversi {formatPercent(s.fromPrev)}
-            </p>
-          )}
-          <div
-            className="mx-auto flex items-baseline justify-between gap-2 rounded-xl px-3.5 py-2.5"
-            style={{ width: `${WIDTHS[i]}%`, background: SHADES[i], color: i >= 3 ? "#2a190e" : "#fff" }}
-          >
-            <span className="text-sm font-medium">{s.label}</span>
-            <span className="font-semibold tabular-nums">{formatNumber(s.value)}</span>
-          </div>
-          {i > 0 && (
-            <p className="mt-0.5 text-center text-[10px] text-ink-soft dark:text-krem/50">
-              {formatPercent(s.fromTop, 2)} dari impression
-            </p>
-          )}
-        </li>
-      ))}
-    </ol>
+    <div>
+      <ol aria-label="Customer journey funnel">
+        {stages.map((s, i) => {
+          const Icon = ICONS[i] ?? FaEye;
+          const light = i >= 3;
+          const [from, to] = GRADIENTS[i] ?? GRADIENTS[0];
+          return (
+            <li key={s.key}>
+              {s.fromPrev !== null && (
+                <div className="my-1.5 flex justify-center">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-tanah-50 px-3 py-1 text-[11px] font-semibold text-tanah-700 ring-1 ring-tanah-900/5 dark:bg-white/10 dark:text-krem/85 dark:ring-white/10">
+                    <FaArrowDown className="size-2.5 text-emas" aria-hidden />
+                    konversi {formatPercent(s.fromPrev)}
+                  </span>
+                </div>
+              )}
+              <div
+                className={`relative mx-auto flex items-center gap-3 overflow-hidden rounded-2xl px-3.5 py-3 shadow-[0_10px_24px_-14px_rgba(42,25,14,0.7)] ${light ? "text-tanah-900" : "text-white"}`}
+                style={{ width: `${WIDTHS[i]}%`, backgroundImage: `linear-gradient(100deg, ${from}, ${to})` }}
+              >
+                <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent" />
+                <span className={`relative grid size-10 shrink-0 place-items-center rounded-xl ${light ? "bg-white/45" : "bg-white/20"}`}>
+                  <Icon className="size-[18px]" aria-hidden />
+                </span>
+                <div className="relative min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{s.label}</p>
+                  {i > 0 && <p className={`text-[11px] ${light ? "text-tanah-900/70" : "text-white/75"}`}>{formatPercent(s.fromTop, 2)} dari impression</p>}
+                </div>
+                <p className="relative font-display text-xl font-semibold tabular-nums">
+                  <CountUp to={s.value} />
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      {last && (
+        <p className="mt-4 rounded-2xl bg-tanah-50 px-4 py-2.5 text-center text-xs text-ink-soft dark:bg-white/5 dark:text-krem/70">
+          Dari impression sampai purchase: <span className="font-semibold text-tanah-700 dark:text-emas">{formatPercent(last.fromTop, 3)}</span>
+        </p>
+      )}
+    </div>
   );
 }

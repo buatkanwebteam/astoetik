@@ -1,22 +1,20 @@
 import type { ReactNode } from "react";
-import { CircleAlert, CircleCheck, Clock, ShieldCheck, ShieldOff } from "lucide-react";
+import { FaBarcode, FaCalendarDays, FaCircleCheck, FaClockRotateLeft, FaIndustry, FaShieldHalved } from "react-icons/fa6";
 import type { ProductUnit } from "@/types";
 import { formatDate } from "@/lib/format";
 import { QC_LABEL, warrantyState, warrantyUntil } from "@/lib/units";
 
 const date = (iso: string) => formatDate(`${iso}T00:00:00+07:00`, { day: "numeric", month: "long", year: "numeric" });
 
-function Pill({ tone, icon: Icon, children }: { tone: "ok" | "warn" | "muted"; icon: typeof CircleCheck; children: string }) {
-  const cls = {
-    ok: "bg-emerald-50 text-emerald-800 ring-emerald-200",
-    warn: "bg-red-50 text-red-800 ring-red-200",
-    muted: "bg-kat-raised text-kat-muted ring-kat-line",
-  }[tone];
+function Tile({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-[11px] font-medium ring-1 ${cls}`}>
-      <Icon className="size-3" aria-hidden />
-      {children}
-    </span>
+    <div className="rounded-2xl bg-tanah-50 p-4">
+      <p className="flex items-center gap-2 text-xs font-medium text-ink-soft">
+        <span className="grid size-6 place-items-center rounded-lg bg-white text-tanah-600 shadow-sm">{icon}</span>
+        {label}
+      </p>
+      <div className="mt-2 text-sm font-semibold leading-snug">{children}</div>
+    </div>
   );
 }
 
@@ -24,55 +22,65 @@ function Pill({ tone, icon: Icon, children }: { tone: "ok" | "warn" | "muted"; i
 export function UnitCard({ unit }: { unit: ProductUnit }) {
   const until = warrantyUntil(unit);
   const warranty = warrantyState(unit);
-  const qcIcon = { lulus: CircleCheck, menunggu: Clock, "tidak-lulus": CircleAlert }[unit.qcStatus];
-  const qcTone = ({ lulus: "ok", menunggu: "muted", "tidak-lulus": "warn" } as const)[unit.qcStatus];
-  const qcDetail = [unit.qcDate ? date(unit.qcDate) : null, unit.qcInspector ? `oleh ${unit.qcInspector}` : null]
-    .filter(Boolean)
-    .join(" · ");
-
-  const rows: [string, ReactNode][] = [
-    ["Nomor seri", <span key="s" className="font-mono">{unit.serial}</span>],
-    ["Kode produksi", <span key="c" className="font-mono">{unit.productionCode}</span>],
-    ["Tanggal produksi", date(unit.productionDate)],
-    [
-      "Garansi",
-      warranty === "tidak-ada" ? (
-        <span key="g" className="text-kat-muted">Tidak ada garansi</span>
-      ) : (
-        <span key="g" className="flex flex-wrap items-center gap-2">
-          {unit.warrantyMonths} bulan, s/d {date(until!)}
-          {warranty === "aktif" ? (
-            <Pill tone="ok" icon={ShieldCheck}>Aktif</Pill>
-          ) : (
-            <Pill tone="muted" icon={ShieldOff}>Berakhir</Pill>
-          )}
-        </span>
-      ),
-    ],
-    [
-      "Quality control",
-      <span key="q" className="flex flex-wrap items-center gap-2">
-        <Pill tone={qcTone} icon={qcIcon}>{QC_LABEL[unit.qcStatus]}</Pill>
-        {qcDetail && <span className="text-kat-muted">{qcDetail}</span>}
-      </span>,
-    ],
-  ];
-  if (unit.note) rows.push(["Catatan", unit.note]);
+  const qcDetail = [unit.qcDate ? date(unit.qcDate) : null, unit.qcInspector ? `oleh ${unit.qcInspector}` : null].filter(Boolean).join(", ");
 
   return (
-    <section aria-labelledby="unit-title" className="rounded-md border border-aksen-deep/40 bg-kat-raised/50">
-      <h2 id="unit-title" className="border-b border-kat-line px-4 py-3 font-grotesk text-base font-semibold">
-        Data unit ini
-      </h2>
-      <dl className="divide-y divide-kat-line text-sm">
-        {rows.map(([label, value]) => (
-          <div key={label} className="grid grid-cols-[2fr_3fr] gap-2 px-4 py-2.5">
-            <dt className="text-kat-muted">{label}</dt>
-            <dd className="font-medium">{value}</dd>
+    <section aria-labelledby="unit-title" className="glossy overflow-hidden rounded-3xl border border-tanah-900/[0.07] bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-tanah-900 to-tanah-600 px-5 py-4 text-krem sm:px-6">
+        <div className="flex items-center gap-3">
+          <span className="grid size-10 place-items-center rounded-2xl bg-white/15 text-hm-gold">
+            <FaBarcode className="size-4" aria-hidden />
+          </span>
+          <h2 id="unit-title" className="font-display text-xl font-semibold">
+            Data unit ini
+          </h2>
+        </div>
+        <span className="inline-flex items-center gap-2 rounded-full bg-emerald-400/20 px-3.5 py-1.5 text-sm font-semibold text-emerald-100 ring-1 ring-emerald-300/40">
+          <FaCircleCheck className="size-3.5" aria-hidden />
+          {QC_LABEL.lulus}
+        </span>
+      </div>
+
+      <div className="grid gap-3 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
+        <Tile icon={<FaBarcode className="size-3" aria-hidden />} label="Nomor produksi">
+          <span className="font-mono text-lg">{unit.serial}</span>
+          {unit.productionCode !== unit.serial && <span className="mt-0.5 block font-mono text-xs font-medium text-ink-soft">{unit.productionCode}</span>}
+        </Tile>
+        <Tile icon={<FaCalendarDays className="size-3" aria-hidden />} label="Tanggal produksi">
+          {date(unit.productionDate)}
+        </Tile>
+        <Tile icon={<FaShieldHalved className="size-3" aria-hidden />} label="Garansi">
+          {warranty === "tidak-ada" ? (
+            <span className="text-ink-soft">Tidak ada garansi</span>
+          ) : (
+            <>
+              {unit.warrantyMonths} bulan
+              <span className="mt-0.5 block text-xs font-medium text-ink-soft">s/d {date(until!)}</span>
+              {warranty === "aktif" ? (
+                <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
+                  <FaCircleCheck className="size-2.5" aria-hidden /> Aktif
+                </span>
+              ) : (
+                <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-tanah-100 px-2 py-0.5 text-[11px] font-semibold text-tanah-700">
+                  <FaClockRotateLeft className="size-2.5" aria-hidden /> Berakhir
+                </span>
+              )}
+            </>
+          )}
+        </Tile>
+        <Tile icon={<FaIndustry className="size-3" aria-hidden />} label="Quality control">
+          {QC_LABEL.lulus}
+          {qcDetail && <span className="mt-0.5 block text-xs font-medium text-ink-soft">{qcDetail}</span>}
+        </Tile>
+        {unit.note && (
+          <div className="rounded-2xl bg-emas-soft/50 p-4 text-sm sm:col-span-2 lg:col-span-4">
+            <p className="text-xs font-medium text-ink-soft">Catatan</p>
+            <p className="mt-1 font-medium">{unit.note}</p>
           </div>
-        ))}
-      </dl>
-      <p className="border-t border-kat-line px-4 py-2.5 text-[11px] leading-relaxed text-kat-muted">
+        )}
+      </div>
+
+      <p className="border-t border-tanah-900/[0.07] px-5 py-3 text-xs leading-relaxed text-ink-soft sm:px-6">
         Garansi dihitung dari tanggal produksi. Simpan halaman ini atau foto label QR sebagai bukti unit.
       </p>
     </section>

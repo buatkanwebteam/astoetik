@@ -38,7 +38,7 @@ create table product_units (
   production_code text not null,
   production_date date not null,
   warranty_months integer not null default 0 check (warranty_months between 0 and 120),
-  qc_status       text not null check (qc_status in ('lulus', 'menunggu', 'tidak-lulus')),
+  qc_status       text not null check (qc_status = 'lulus'),
   qc_date         date,
   qc_inspector    text,
   note            text,
@@ -125,6 +125,15 @@ create table insight_reports (
   topics         jsonb not null,
   demo           boolean not null default false
 );
+
+-- Login brute-force guard: 3 wrong passwords from one IP lock it for 10 minutes.
+create table if not exists login_attempts (
+  key          text primary key,
+  failures     integer not null default 0,
+  locked_until timestamptz,
+  updated_at   timestamptz not null default now()
+);
+alter table login_attempts enable row level security; -- no policies: only the server's service role touches it
 
 -- Row Level Security -------------------------------------------------------
 -- The app's server uses the service role key (bypasses RLS). These policies

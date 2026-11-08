@@ -2,8 +2,9 @@
 
 import { useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Download, ExternalLink, PackageOpen, Pencil, Plus, Trash2 } from "lucide-react";
-import type { ProductUnit, QcStatus } from "@/types";
+import { Download, ExternalLink, PackageOpen, Pencil, Plus } from "lucide-react";
+import { HoldDelete } from "@/components/dashboard/HoldDelete";
+import type { ProductUnit } from "@/types";
 import { formatDate } from "@/lib/format";
 import { QC_LABEL, nextSerial, todayWib, warrantyState, warrantyUntil } from "@/lib/units";
 import { Drawer } from "./Drawer";
@@ -13,7 +14,7 @@ const FORM_ID = "unit-form";
 const DEFAULT_WARRANTY_MONTHS = 12;
 
 const input =
-  "h-10 w-full rounded-sm border border-kat-line bg-kat-card px-3 text-sm text-kat-text placeholder:text-kat-muted/70 transition-colors duration-150 focus:border-aksen focus:outline-none disabled:bg-kat-raised disabled:text-kat-muted";
+  "h-10 w-full rounded-sm border border-kat-line bg-kat-card px-3 text-sm text-kat-text placeholder:text-kat-muted/70 transition-colors duration-150 focus:outline-none disabled:bg-kat-raised disabled:text-kat-muted";
 
 const shortDate = (iso: string) => formatDate(`${iso}T00:00:00+07:00`);
 
@@ -26,12 +27,6 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
     </label>
   );
 }
-
-const QC_TONE: Record<QcStatus, string> = {
-  lulus: "text-emerald-700 dark:text-emerald-300",
-  menunggu: "text-kat-muted",
-  "tidak-lulus": "text-red-700 dark:text-red-300",
-};
 
 function UnitForm({
   productCode,
@@ -57,7 +52,6 @@ function UnitForm({
   const [productionCode, setProductionCode] = useState(base?.productionCode ?? "");
   const [productionDate, setProductionDate] = useState(unit?.productionDate ?? todayWib());
   const [warrantyMonths, setWarrantyMonths] = useState(String(base?.warrantyMonths ?? DEFAULT_WARRANTY_MONTHS));
-  const [qcStatus, setQcStatus] = useState<QcStatus>(unit?.qcStatus ?? "lulus");
   const [qcDate, setQcDate] = useState(unit ? (unit.qcDate ?? "") : todayWib());
   const [qcInspector, setQcInspector] = useState(base?.qcInspector ?? "");
   const [note, setNote] = useState(unit?.note ?? "");
@@ -75,7 +69,6 @@ function UnitForm({
       productionCode,
       productionDate,
       warrantyMonths: months,
-      qcStatus,
       qcDate: qcDate || null,
       qcInspector: qcInspector.trim() || null,
       note: note.trim() || null,
@@ -149,16 +142,7 @@ function UnitForm({
 
       <fieldset className="space-y-4 rounded-sm border border-kat-line p-4">
         <legend className="px-1 font-grotesk text-sm font-semibold">Quality control</legend>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Status">
-            <select className={input} value={qcStatus} onChange={(e) => setQcStatus(e.target.value as QcStatus)}>
-              {(Object.keys(QC_LABEL) as QcStatus[]).map((s) => (
-                <option key={s} value={s}>
-                  {QC_LABEL[s]}
-                </option>
-              ))}
-            </select>
-          </Field>
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Tanggal QC">
             <input className={input} type="date" value={qcDate} onChange={(e) => setQcDate(e.target.value)} />
           </Field>
@@ -166,7 +150,7 @@ function UnitForm({
             <input className={input} value={qcInspector} onChange={(e) => setQcInspector(e.target.value)} maxLength={80} />
           </Field>
         </div>
-        <p className="text-[11px] text-kat-muted">Status, tanggal, dan nama petugas QC tampil di halaman publik unit.</p>
+        <p className="text-[11px] text-kat-muted">Semua unit berstatus Lolos QC. Tanggal dan nama petugas QC tampil di halaman publik unit.</p>
       </fieldset>
 
       <Field label="Catatan unit" hint="Opsional. Tampil di halaman publik.">
@@ -207,7 +191,6 @@ export function UnitManager({ productCode, units }: { productCode: string; units
   const [editor, setEditor] = useState<Editor>({ mode: "closed" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const editing = editor.mode === "edit" ? (units.find((u) => u.serial === editor.serial) ?? null) : null;
@@ -215,7 +198,6 @@ export function UnitManager({ productCode, units }: { productCode: string; units
 
   function open(next: Editor) {
     setError(null);
-    setConfirmDelete(false);
     setEditor(next);
   }
 
@@ -237,7 +219,8 @@ export function UnitManager({ productCode, units }: { productCode: string; units
         setError(data.error ?? "Gagal menghapus unit.");
         return;
       }
-      done(`Unit ${unit.serial} dihapus.`);
+      // Let the "Terhapus" state show before the drawer closes.
+      window.setTimeout(() => done(`Unit ${unit.serial} dihapus.`), 700);
     } catch {
       setError("Koneksi gagal. Coba lagi.");
     } finally {
@@ -280,14 +263,14 @@ export function UnitManager({ productCode, units }: { productCode: string; units
       ) : (
         // `relative` keeps the absolutely positioned sr-only labels inside the scroll box.
         <div className={`relative overflow-x-auto rounded-md border border-kat-line bg-kat-card ${refreshing ? "opacity-60" : ""}`}>
-          <table className="w-full min-w-[48rem] text-sm">
+          <table className="w-full text-sm md:min-w-[48rem]">
             <thead className="border-b border-kat-line bg-kat-raised">
               <tr>
                 <th scope="col" className={th}>Seri</th>
-                <th scope="col" className={th}>Kode produksi</th>
-                <th scope="col" className={th}>Tgl produksi</th>
+                <th scope="col" className={`${th} hidden md:table-cell`}>Kode produksi</th>
+                <th scope="col" className={`${th} hidden sm:table-cell`}>Tgl produksi</th>
                 <th scope="col" className={th}>Garansi</th>
-                <th scope="col" className={th}>QC</th>
+                <th scope="col" className={`${th} hidden md:table-cell`}>QC</th>
                 <th scope="col" className={th}>
                   <span className="sr-only">Aksi</span>
                 </th>
@@ -303,9 +286,9 @@ export function UnitManager({ productCode, units }: { productCode: string; units
                     <th scope="row" className={`${td} text-left font-mono font-medium text-aksen-text`}>
                       {u.serial}
                     </th>
-                    <td className={`${td} font-mono text-xs`}>{u.productionCode}</td>
-                    <td className={`${td} whitespace-nowrap text-kat-muted`}>{shortDate(u.productionDate)}</td>
-                    <td className={`${td} whitespace-nowrap`}>
+                    <td className={`${td} hidden font-mono text-xs md:table-cell`}>{u.productionCode}</td>
+                    <td className={`${td} hidden whitespace-nowrap text-kat-muted sm:table-cell`}>{shortDate(u.productionDate)}</td>
+                    <td className={`${td} sm:whitespace-nowrap`}>
                       {until ? (
                         <>
                           <span className={state === "aktif" ? "" : "text-kat-muted"}>s/d {shortDate(until)}</span>
@@ -315,12 +298,12 @@ export function UnitManager({ productCode, units }: { productCode: string; units
                         <span className="text-kat-muted">–</span>
                       )}
                     </td>
-                    <td className={`${td} whitespace-nowrap`}>
-                      <span className={QC_TONE[u.qcStatus]}>{QC_LABEL[u.qcStatus]}</span>
+                    <td className={`${td} hidden whitespace-nowrap md:table-cell`}>
+                      <span className="text-emerald-700 dark:text-emerald-300">{QC_LABEL.lulus}</span>
                       {u.qcInspector && <span className="ml-1.5 text-[11px] text-kat-muted">{u.qcInspector}</span>}
                     </td>
                     <td className={td}>
-                      <div className="flex justify-end gap-1.5">
+                      <div className="flex flex-wrap justify-end gap-1.5">
                         <a
                           href={`/api/qr/${productCode}?seri=${encodeURIComponent(u.serial)}&download=1`}
                           className={iconBtn}
@@ -371,36 +354,9 @@ export function UnitManager({ productCode, units }: { productCode: string; units
                 {error}
               </p>
             )}
-            {editing && confirmDelete ? (
-              <div className="rounded-sm border border-red-300 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
-                <p>
-                  Hapus unit <strong>{editing.serial}</strong>? QR yang sudah ditempel di unit ini tidak akan bisa dibuka lagi.
-                </p>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => void remove(editing)}
-                    disabled={busy}
-                    className="h-9 rounded-sm bg-red-700 px-3 font-semibold text-white hover:bg-red-800 disabled:opacity-60"
-                  >
-                    {busy ? "Menghapus…" : "Ya, hapus"}
-                  </button>
-                  <button type="button" onClick={() => setConfirmDelete(false)} className="h-9 rounded-sm px-3 hover:underline">
-                    Batal
-                  </button>
-                </div>
-              </div>
-            ) : (
               <div className="flex flex-wrap items-center justify-between gap-2">
                 {editing ? (
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(true)}
-                    className="inline-flex h-10 items-center gap-1.5 rounded-sm px-3 text-sm text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40"
-                  >
-                    <Trash2 className="size-4" aria-hidden />
-                    Hapus
-                  </button>
+                  <HoldDelete onConfirm={() => void remove(editing)} disabled={busy} />
                 ) : (
                   <span />
                 )}
@@ -422,7 +378,6 @@ export function UnitManager({ productCode, units }: { productCode: string; units
                   </button>
                 </div>
               </div>
-            )}
           </div>
         }
       >

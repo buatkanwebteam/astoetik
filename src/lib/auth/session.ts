@@ -22,11 +22,12 @@ export async function requireApiSession(): Promise<Response | null> {
 }
 
 /**
- * Supabase mode: verify against Supabase Auth (admin user created in the
- * Supabase dashboard). Demo mode: compare with DEMO_ADMIN_* env.
+ * Dashboard login. Default: compare with DEMO_ADMIN_* env, whatever database is in use (the data layer
+ * talks to Supabase with the service key on the server, so it does not need a Supabase Auth user).
+ * With USE_SUPABASE_AUTH=true: verify against Supabase Auth instead (admin user created in the dashboard).
  */
 export async function verifyCredentials(email: string, password: string): Promise<boolean> {
-  if (isSupabaseEnabled && env.supabaseAnonKey) {
+  if (env.useSupabaseAuth && isSupabaseEnabled && env.supabaseAnonKey) {
     const sb = createClient(env.supabaseUrl, env.supabaseAnonKey, { auth: { persistSession: false } });
     const { error } = await sb.auth.signInWithPassword({ email, password });
     return !error;

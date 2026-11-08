@@ -44,7 +44,7 @@ Log keputusan penting selama membangun prototype ASTERA-X.
 
 ## QR & Export
 
-23. **QR berisi `NEXT_PUBLIC_SITE_URL/p/<kode>?src=qr`**, warna coklat gelap di atas putih (kontras tinggi agar mudah dipindai), level koreksi M. Dashboard memberi peringatan bila `NEXT_PUBLIC_SITE_URL` masih localhost. Unduhan tunggal (PNG 768 px), semua (.zip berisi PNG + `daftar-qr.csv`), dan halaman cetak label 6 × 8 cm (QR SVG agar tajam saat dicetak).
+23. **QR berisi `NEXT_PUBLIC_SITE_URL/p/<kode>?src=qr`**, warna coklat gelap di atas putih (kontras tinggi agar mudah dipindai), level koreksi M. Domain produksi: `https://asterax.my.id` (default `NEXT_PUBLIC_SITE_URL`).
 24. **Export .xlsx**: satu workbook per dataset (`metrics`, `posts`, `funnel`, `insights`, `content`) atau semuanya (`all`). Tiap sheet punya baris judul (lingkup + label DATA DUMMY), header, autofilter, lebar kolom, format angka `#,##0` / `0.00%` / tanggal. Tanggal ditulis sebagai serial Excel dari komponen UTC yang sudah digeser ke WIB, karena konversi `Date` bawaan SheetJS bergantung pada zona waktu server.
 
 ## Katalog Produk (database admin)
@@ -60,10 +60,16 @@ Log keputusan penting selama membangun prototype ASTERA-X.
 ## Unit produk (QR per unit fisik)
 
 32. **Dua level QR.** `/p/<kode>` = halaman umum jenis produk (tetap ada, mis. untuk brosur/kemasan). `/p/<kode>/<seri>` = satu unit fisik: isi halaman umum ditambah kartu "Data unit ini". Komponen halaman dipakai bersama (`ProductView`).
-33. **Data unit**: nomor seri (bagian URL, unik per jenis, tidak bisa diubah), kode produksi, tanggal produksi, garansi (bulan), status/tanggal/petugas QC, catatan. Disimpan di `product_units` (PK `product_code, serial`, cascade saat produk dihapus).
+33. **Data unit**: nomor seri (bagian URL, unik per jenis, tidak bisa diubah), kode produksi, tanggal produksi, garansi (bulan), tanggal/petugas QC (semua unit berstatus Lolos QC, tidak ada pilihan lain), catatan. Disimpan di `product_units` (PK `product_code, serial`, cascade saat produk dihapus).
 34. **Garansi dihitung dari tanggal produksi**, karena tanggal pembelian tidak diketahui sistem. Status aktif/berakhir dihitung per hari WIB. Penambahan bulan yang melewati akhir bulan dijepit ke hari terakhir bulan itu (31 Jan + 1 bln = 28 Feb).
 35. **Unit diinput satu per satu** di `/dashboard/products/<kode>`. Form unit baru mengusulkan seri berikutnya (0001, 0002, …) dan menyalin kode produksi, garansi, dan petugas QC dari unit terakhir.
 36. **Halaman unit `noindex`** karena memuat nama petugas QC dan data garansi per unit. Tabel `product_units` tidak punya policy `anon`; data dibaca lewat server (service role).
 37. **Event analitik tetap per jenis produk**; halaman unit menambahkan `meta.serial` pada `page_view`/`qr_scan`. Chatbot tetap konteks jenis produk (belum tahu data unit).
 38. **Cetak label**: `/dashboard/products/print` = label per jenis; `?kode=<kode>` = label per unit produk itu.
 39. **Unit contoh untuk semua produk** (`src/data/units.ts`): 3 unit per produk (seri 0001–0003, total 45). Kode produksi `PRD-YYMM-NN`, tanggal tetap, petugas QC berupa kode netral (`QC-01`…), dan setiap unit bercatatan "Data contoh untuk demo." Variasi disengaja: tiap produk ke-5 punya unit 0001 dengan garansi sudah berakhir, sebagian unit 0003 berstatus QC menunggu. Mode lokal memakai seed ini sampai admin mengubah unit; `seed.sql` ikut memuatnya. Hapus/ganti dengan data produksi asli sebelum dipakai nyata.
+
+## AI (Gemini)
+
+- **Dua model, keduanya free tier** (diuji dengan kunci proyek ini, Nov 2026): `gemini-3.5-flash` (`GEMINI_MODEL`) untuk analisis berskema JSON (Advisor, Insight, ide konten), `gemini-3.5-flash-lite` (`GEMINI_FAST_MODEL`) untuk jawaban chat. Respons uji: flash-lite 1,5 dtk, flash 3,8 dtk; `gemini-2.5-flash` 14 dtk dan `gemini-3.8-flash` hingga 196 dtk, sedangkan `gemini-2.5-flash-lite` sudah tidak tersedia (404). Masing-masing menjadi cadangan bagi yang lain bila sibuk (503) atau kena batas.
+- **Sumber pengetahuan chatbot**: `referensi/FAQ per Produk.pdf` ditranskripsi ke `src/data/faq-pdf.ts` (A-AS001, A-SD002, K-CL001): cara mengoperasikan, mematikan, kendala, perawatan. Dipakai sebagai FAQ halaman produk dan konteks chatbot (utama bila berbeda dengan teks manual). Produk lain memakai FAQ umum.
+- **Kunci API hanya di server** (`.env.local`, tidak di-commit). Bila Gemini menolak (kunci, kuota, jaringan), semua fitur AI otomatis memakai jawaban lokal (pencarian FAQ, bank ide, aturan kata kunci) dan berhenti memanggil Gemini selama 5 menit.

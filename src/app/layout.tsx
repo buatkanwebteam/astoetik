@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import "./globals.css";
+import { env } from "@/lib/env";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -15,7 +16,9 @@ const instrument = Instrument_Sans({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Astoetik Indonesia", template: "%s · ASTERA-X" },
+  // Link previews (WhatsApp, social) need absolute image URLs on the real domain.
+  metadataBase: new URL(env.siteUrl),
+  title: { default: "Astoetik Indonesia", template: "%s - Astoetik" },
   description: "CV. Astoetik Indonesia.",
 };
 

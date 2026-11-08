@@ -1,7 +1,7 @@
 import { requireApiSession } from "@/lib/auth/session";
 import { isGeminiEnabled } from "@/lib/env";
 import { getDb } from "@/lib/db";
-import { AiError, generateJson } from "@/lib/ai/gemini";
+import { generateJson } from "@/lib/ai/gemini";
 import { insightsSchema, type InsightsResult } from "@/lib/ai/schemas";
 import { INSIGHTS_SYSTEM } from "@/lib/ai/prompts";
 import { mockInsights } from "@/lib/ai/mock-ai";
@@ -28,6 +28,7 @@ export async function POST() {
   }
 
   let result: InsightsResult;
+  let demo = !isGeminiEnabled;
   if (!isGeminiEnabled) {
     result = mockInsights(messages);
   } else {
@@ -37,9 +38,10 @@ export async function POST() {
         system: INSIGHTS_SYSTEM,
         prompt: `Ada ${messages.length} pertanyaan pelanggan. Setiap indeks hanya boleh masuk satu topik.\n\n${list}`,
       });
-    } catch (err) {
-      const message = err instanceof AiError ? err.message : "Gagal memanggil AI.";
-      return Response.json({ error: message }, { status: 502 });
+    } catch {
+      // Gemini unavailable: group the questions with the local keyword rules.
+      result = mockInsights(messages);
+      demo = true;
     }
   }
 
@@ -59,6 +61,6 @@ export async function POST() {
     .sort((a, b) => b.count - a.count);
 
   await db.setMessageTopics(updates);
-  const report = await db.saveInsightReport({ totalMessages: messages.length, topics, demo: !isGeminiEnabled });
+  const report = await db.saveInsightReport({ totalMessages: messages.length, topics, demo });
   return Response.json({ report });
 }

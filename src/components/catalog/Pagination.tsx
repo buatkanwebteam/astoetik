@@ -6,7 +6,7 @@ import { pageList } from "@/lib/catalog";
 export function Pagination({ page, total, onChange }: { page: number; total: number; onChange: (p: number) => void }) {
   if (total <= 1) return null;
   const edge =
-    "flex h-10 items-center gap-1 rounded-sm px-3 text-sm text-kat-muted transition-colors duration-150 hover:text-kat-text disabled:pointer-events-none disabled:opacity-40";
+    "flex h-10 items-center gap-1 rounded-sm border border-kat-muted/40 bg-kat-card px-3 text-sm font-medium text-kat-text transition-colors duration-150 hover:border-kat-text disabled:pointer-events-none disabled:opacity-40";
 
   return (
     <nav aria-label="Halaman katalog" className="flex items-center justify-center gap-1">
@@ -17,7 +17,7 @@ export function Pagination({ page, total, onChange }: { page: number; total: num
       <ol className="flex items-center gap-1">
         {pageList(page, total).map((p, i) =>
           p === "…" ? (
-            <li key={`gap-${i}`} className="grid size-10 place-items-center font-mono text-sm text-kat-muted" aria-hidden>
+            <li key={`gap-${i}`} className="grid size-10 place-items-center font-mono text-sm text-kat-text" aria-hidden>
               …
             </li>
           ) : (
@@ -29,8 +29,8 @@ export function Pagination({ page, total, onChange }: { page: number; total: num
                 aria-label={`Halaman ${p}`}
                 className={`grid size-10 place-items-center rounded-sm border font-mono text-sm tabular-nums transition-colors duration-150 ${
                   p === page
-                    ? "border-aksen bg-aksen text-on-aksen"
-                    : "border-kat-line text-kat-muted hover:border-kat-muted hover:text-kat-text"
+                    ? "border-aksen-deep bg-aksen-deep font-semibold text-on-aksen shadow-sm"
+                    : "border-kat-muted/40 bg-kat-card text-kat-text hover:border-kat-text"
                 }`}
               >
                 {p}

@@ -34,7 +34,6 @@ export function Faq() {
             text="Pertanyaan yang sering diajukan"
             className="font-display text-3xl font-medium leading-[1.1] tracking-[-0.03em] md:text-4xl"
           />
-          <p className="mt-3 max-w-sm text-sm text-hm-gold/70">Jawaban singkat tentang QR, ASKA-AI, dan layanan purnajual.</p>
         </div>
         <ul className="divide-y divide-white/15 border-y border-white/15">
           {ITEMS.map((it, i) => {

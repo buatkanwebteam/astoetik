@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { PackageSearch, Plus } from "lucide-react";
 import type { Product, ProductCategory } from "@/types";
@@ -44,14 +44,9 @@ function sameFacets(a: Filters, b: Filters) {
 export function ProductDatabase({
   products,
   categoryLabel,
-  siteUrl,
-  headerActions,
 }: {
   products: Product[];
   categoryLabel: Record<ProductCategory, string>;
-  siteUrl: string;
-  /** Server-rendered page actions (QR zip, print labels) shown beside "Tambah produk". */
-  headerActions: ReactNode;
 }) {
   const router = useRouter();
   const [refreshing, startRefresh] = useTransition();
@@ -188,10 +183,8 @@ export function ProductDatabase({
     <>
     <PageHeader
       title="Katalog Produk"
-      subtitle={`${items.length} produk. Setiap produk punya halaman publik dan QR yang mengarah ke ${siteUrl}/p/<kode>.`}
     >
       <div className="flex flex-wrap gap-2">
-        {headerActions}
         <button
           type="button"
           onClick={() => openEditor({ mode: "create" })}
@@ -203,7 +196,7 @@ export function ProductDatabase({
     </PageHeader>
     <div className="grid items-start gap-6 font-sans text-kat-text xl:grid-cols-[16rem_minmax(0,1fr)]">
       <aside
-        className="sticky top-20 hidden max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-md border border-kat-line bg-kat-card px-4 pt-5 xl:block"
+        className="hidden rounded-md border border-kat-line bg-kat-card px-4 pt-5 xl:block"
         aria-label="Filter katalog"
       >
         {filterPanel}
@@ -267,11 +260,30 @@ export function ProductDatabase({
               ))}
             </ProductGrid>
           ) : (
-            <ProductTable
-              items={pageItems}
-              categoryLabel={categoryLabel}
-              onEdit={(code) => openEditor({ mode: "edit", code })}
-            />
+            <>
+              <div className="hidden lg:block">
+                <ProductTable
+                  items={pageItems}
+                  categoryLabel={categoryLabel}
+                  onEdit={(code) => openEditor({ mode: "edit", code })}
+                />
+              </div>
+              {/* The wide table needs lg; narrower screens fall back to cards. */}
+              <div className="lg:hidden">
+                <ProductGrid>
+                  {pageItems.map((item, i) => (
+                    <li key={item.code}>
+                      <ProductCard
+                        item={item}
+                        categoryLabel={categoryLabel[item.category]}
+                        priority={current === 1 && i < 3}
+                        onEdit={() => openEditor({ mode: "edit", code: item.code })}
+                      />
+                    </li>
+                  ))}
+                </ProductGrid>
+              </div>
+            </>
           )}
         </div>
 
@@ -329,7 +341,6 @@ export function ProductDatabase({
             key={editor.mode === "edit" ? editor.code : "new"}
             product={editing}
             categoryLabel={categoryLabel}
-            siteUrl={siteUrl}
             onSubmittingChange={setFormBusy}
             onSaved={finishMutation}
             onError={setFormError}

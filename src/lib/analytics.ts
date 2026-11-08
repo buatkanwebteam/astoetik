@@ -1,5 +1,8 @@
 import type { PostFormat, SocialMetric, SocialPlatform, SocialPost, TrackEvent } from "@/types";
-import { SOCIAL_PLATFORMS } from "@/types";
+
+/** Social media only. Shopee is an online shop (sales platform), not social media. */
+export const SOCIAL_MEDIA: SocialPlatform[] = ["tiktok", "instagram", "youtube"];
+export const isSocial = (p: SocialPlatform) => SOCIAL_MEDIA.includes(p);
 
 export const RANGE_OPTIONS = [7, 30, 90] as const;
 export type RangeDays = (typeof RANGE_OPTIONS)[number];
@@ -28,7 +31,7 @@ export function parseFilters(sp: Record<string, string | string[] | undefined>):
   const d = Number(sp.days);
   const days = (RANGE_OPTIONS as readonly number[]).includes(d) ? (d as RangeDays) : 30;
   const p = String(sp.platform ?? "all");
-  const platform = (SOCIAL_PLATFORMS as string[]).includes(p) ? (p as SocialPlatform) : "all";
+  const platform = (SOCIAL_MEDIA as string[]).includes(p) ? (p as SocialPlatform) : "all";
   return { days, platform };
 }
 
@@ -167,42 +170,56 @@ export function countEvents(events: TrackEvent[]) {
   return out;
 }
 
-/** Compact, aggregated snapshot sent to the AI advisor (never raw rows). */
+/** Compact, aggregated snapshot sent to the AI advisor (never raw rows). Purchases come from the online shop only. */
 export function advisorSnapshot(metrics: SocialMetric[], posts: SocialPost[], filters: Filters) {
-  const perPlatform = SOCIAL_PLATFORMS.map((p) => {
-    const t = totals(metrics.filter((m) => m.platform === p));
+  const social = metrics.filter((m) => isSocial(m.platform));
+  const socialPosts = posts.filter((x) => isSocial(x.platform));
+  const shop = totals(metrics.filter((m) => m.platform === "shopee"));
+  const perPlatform = SOCIAL_MEDIA.map((p) => {
+    const t = totals(social.filter((m) => m.platform === p));
     return {
       platform: PLATFORM_META[p].label,
       impressions: t.impressions,
       engagementRate: +ratio(t.engagement, t.impressions).toFixed(4),
       profileVisitRate: +ratio(t.profileVisits, t.engagement).toFixed(4),
       clickRate: +ratio(t.marketplaceClicks, t.profileVisits).toFixed(4),
-      purchaseRate: +ratio(t.purchases, t.marketplaceClicks).toFixed(4),
-      purchases: t.purchases,
     };
   }).filter((p) => p.impressions > 0);
-  const all = totals(metrics);
+  const all = totals(social);
   return {
     periodDays: filters.days,
     platformFilter: filters.platform,
-    totals: all,
-    funnel: funnel(all).map((s) => ({ stage: s.label, value: s.value, conversionFromPrev: s.fromPrev && +s.fromPrev.toFixed(4) })),
+    totals: {
+      impressions: all.impressions,
+      engagement: all.engagement,
+      profileVisits: all.profileVisits,
+      marketplaceClicks: all.marketplaceClicks,
+    },
+    onlineShop: {
+      platform: "Shopee",
+      marketplaceClicks: shop.marketplaceClicks,
+      purchases: shop.purchases,
+      conversion: +ratio(shop.purchases, shop.marketplaceClicks).toFixed(4),
+    },
+    funnel: funnel({ ...all, purchases: shop.purchases }).map((st) => ({
+      stage: st.label,
+      value: st.value,
+      conversionFromPrev: st.fromPrev && +st.fromPrev.toFixed(4),
+    })),
     perPlatform,
-    byFormat: summaryByFormat(posts).map((g) => ({
+    byFormat: summaryByFormat(socialPosts).map((g) => ({
       format: g.label,
       posts: g.posts,
       engagementRate: +g.engagementRate.toFixed(4),
       avgImpressions: g.avgImpressions,
       clicks: g.clicks,
-      purchases: g.purchases,
     })),
-    topPosts: topContent(posts, "engagement", 3).map((p) => ({
-      title: p.title,
-      platform: PLATFORM_META[p.platform].label,
-      format: FORMAT_LABEL[p.format],
-      engagement: postEngagement(p),
-      clicks: p.clicks,
-      purchases: p.purchases,
+    topPosts: topContent(socialPosts, "engagement", 3).map((x) => ({
+      title: x.title,
+      platform: PLATFORM_META[x.platform].label,
+      format: FORMAT_LABEL[x.format],
+      engagement: postEngagement(x),
+      clicks: x.clicks,
     })),
   };
 }

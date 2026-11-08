@@ -41,7 +41,7 @@ export function InsightsPanel({ initialReport, messageCount }: { initialReport: 
             </p>
             <p className="text-xs text-ink-soft dark:text-krem/60">
               {report
-                ? `Ringkasan terakhir: ${formatDateTime(report.createdAt)} dari ${report.totalMessages} pertanyaan${report.demo ? " (Mode Demo)" : ""}.`
+                ? `Ringkasan terakhir: ${formatDateTime(report.createdAt)} dari ${report.totalMessages} pertanyaan.`
                 : "Belum ada ringkasan. Tekan Ringkas untuk mengelompokkan pertanyaan."}
             </p>
           </div>

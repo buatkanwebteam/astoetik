@@ -30,6 +30,17 @@ export function Drawer({
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
+  // While the drawer is open only its form area scrolls; the page behind stays put.
+  useEffect(() => {
+    if (!open) return;
+    const root = document.documentElement;
+    const previous = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      root.style.overflow = previous;
+    };
+  }, [open]);
+
   return (
     <dialog
       ref={ref}
@@ -37,7 +48,7 @@ export function Drawer({
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      className={`fixed inset-y-0 m-0 h-dvh max-h-none ${wide ? "w-[min(40rem,100%)]" : "w-[min(24rem,100%)]"} max-w-none border-kat-line bg-kat-card p-0 text-kat-text backdrop:bg-black/40 ${
+      className={`fixed inset-y-0 m-0 h-dvh max-h-none overflow-hidden ${wide ? "w-[min(40rem,100%)]" : "w-[min(24rem,100%)]"} max-w-none border-kat-line bg-kat-card p-0 text-kat-text backdrop:bg-black/40 ${
         side === "left" ? "left-0 border-r" : "right-0 left-auto border-l"
       }`}
     >
@@ -53,7 +64,7 @@ export function Drawer({
             <X className="size-5" aria-hidden />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
         {footer && <div className="shrink-0 border-t border-kat-line p-5">{footer}</div>}
       </div>
     </dialog>

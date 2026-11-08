@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaArrowRight } from "react-icons/fa6";
 import { track } from "@/components/product/track";
+import { Select } from "@/components/dashboard/Select";
 
 const MAX_LEN = 500;
 const SUGGESTIONS = ["Apa yang bisa kamu bantu?", "Bagaimana cara pakainya?", "Bagaimana cara merawatnya?"];
@@ -92,31 +93,31 @@ export function AskaChat({ products }: { products: ChatProduct[] }) {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col rounded-3xl bg-gradient-to-br from-hm-dark/80 via-hm-deep/75 to-hm-deep/85 p-5 shadow-[0_24px_60px_-24px_rgba(0,0,0,.7),inset_0_1px_0_rgba(255,255,255,.3)] ring-1 ring-white/20 md:p-6">
+    <div className="flex h-full min-h-0 w-full flex-col rounded-3xl bg-gradient-to-br from-hm-dark/80 via-hm-deep/75 to-hm-deep/85 p-3.5 shadow-[0_24px_60px_-24px_rgba(0,0,0,.7),inset_0_1px_0_rgba(255,255,255,.3)] ring-1 ring-white/20 md:p-6">
       <div className="flex items-center justify-between gap-3">
         <div className="flex gap-2" aria-hidden>
           <span className="size-3 rounded-full bg-[#ff5f57]" />
           <span className="size-3 rounded-full bg-[#febc2e]" />
           <span className="size-3 rounded-full bg-[#28c840]" />
         </div>
-        <label className="flex items-center gap-2 text-xs text-white/70">
+        <label className="flex min-w-0 items-center gap-2 text-xs text-white/70">
           Tanya tentang
-          <select
+          <Select
+            variant="dark"
+            size="sm"
+            fullWidth={false}
+            className="max-w-[10.5rem] sm:max-w-[14rem]"
+            align="right"
+            ariaLabel="Pilih produk"
             value={code}
-            onChange={(e) => changeProduct(e.target.value)}
+            onChange={changeProduct}
             disabled={busy}
-            className="max-w-[12rem] truncate rounded-full border border-white/25 bg-hm-deep/60 px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-hm-gold"
-          >
-            {products.map((p) => (
-              <option key={p.code} value={p.code}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+            options={products.map((p) => ({ value: p.code, label: p.name }))}
+          />
         </label>
       </div>
 
-      <div ref={listRef} data-lenis-prevent className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-width:thin]" aria-live="polite">
+      <div ref={listRef} data-lenis-prevent className="mt-3 min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-width:thin]" aria-live="polite">
         <p className="text-sm text-hm-gold/80">Hai, saya ASKA. Tanya apa saja soal produk ini ya.</p>
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -140,14 +141,14 @@ export function AskaChat({ products }: { products: ChatProduct[] }) {
       )}
 
       {messages.length === 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
           {SUGGESTIONS.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => send(s)}
               disabled={busy}
-              className="rounded-full bg-hm-gold px-4 py-2 text-xs font-semibold text-hm-deep transition hover:bg-white disabled:opacity-50"
+              className="rounded-full bg-hm-gold px-3 py-1.5 text-xs font-semibold text-hm-deep transition hover:bg-white disabled:opacity-50 sm:px-4 sm:py-2"
             >
               {s}
             </button>
@@ -156,7 +157,7 @@ export function AskaChat({ products }: { products: ChatProduct[] }) {
       )}
 
       <form
-        className="mt-4 flex items-center gap-2 rounded-full bg-white/10 py-2 pl-5 pr-2 ring-1 ring-white/20"
+        className="mt-3 flex items-center gap-2 rounded-full bg-white/10 py-1.5 pl-4 pr-1.5 ring-1 ring-white/20 sm:mt-4 sm:py-2 sm:pl-5 sm:pr-2"
         onSubmit={(e) => {
           e.preventDefault();
           void send(input);
