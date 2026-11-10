@@ -12,7 +12,7 @@ export const NAV = [
   { href: "#tentang", label: "Tentang" },
   { href: "#produk", label: "Produk" },
   { href: "#panduan", label: "Smart Guide" },
-  { href: "#aska", label: "ASKA-AI" },
+  { href: "#panduan", label: "ASKA-AI" },
   { href: "#event", label: "Event & Partner" },
 ];
 
@@ -38,7 +38,7 @@ export function Hero() {
             <nav className="flex items-center gap-6 whitespace-nowrap text-sm text-white" aria-label="Menu utama">
               {NAV.map((n) => (
                 <a
-                  key={n.href}
+                  key={n.label}
                   href={n.href}
                   className="relative py-1 text-white/85 transition-colors duration-300 hover:text-white after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-hm-gold after:transition-transform after:duration-300 hover:after:scale-x-100"
                 >
@@ -65,7 +65,7 @@ export function Hero() {
         {open && (
           <div className="absolute right-4 top-20 z-20 w-56 rounded-2xl bg-white p-2 lg:hidden text-sm text-[#141414] shadow-2xl md:right-6">
             {NAV.map((n) => (
-              <a key={n.href} href={n.href} onClick={() => setOpen(false)} className="block rounded-xl px-4 py-2.5 hover:bg-hm-sand">
+              <a key={n.label} href={n.href} onClick={() => setOpen(false)} className="block rounded-xl px-4 py-2.5 hover:bg-hm-sand">
                 {n.label}
               </a>
             ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Latar video YouTube lewat IFrame API: tanpa kontrol, tanpa subtitle, loop dari detik `start`,
 // dan meminta kualitas HD. Video tidak diunduh ke codebase.
@@ -51,20 +51,7 @@ function loadApi(): Promise<YTNamespace> {
   return apiPromise;
 }
 
-// A 1080p video that is scaled up 1.35x and sits under blurred glass is heavy: on phones and
-// tablets it makes the whole hero (and the scroll after it) stutter. So the live video is only
-// used on desktop-class screens that allow motion and are not on a data saver; everything else
-// gets the video's still frame, which costs nothing per frame.
-function subscribeLive() {
-  return () => {};
-}
-
-function liveSnapshot() {
-  return true;
-}
-
 export function HeroVideo({ videoId, start = 0 }: { videoId: string; start?: number }) {
-  const live = useSyncExternalStore(subscribeLive, liveSnapshot, () => false);
   const host = useRef<HTMLDivElement>(null);
   const inView = useRef(true);
   const playerRef = useRef<YTPlayer | null>(null);
@@ -72,7 +59,6 @@ export function HeroVideo({ videoId, start = 0 }: { videoId: string; start?: num
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!live) return;
     let player: YTPlayer | undefined;
     let cancelled = false;
 
@@ -147,7 +133,7 @@ export function HeroVideo({ videoId, start = 0 }: { videoId: string; start?: num
       playerRef.current = null;
       player?.destroy();
     };
-  }, [live, videoId, start]);
+  }, [videoId, start]);
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>

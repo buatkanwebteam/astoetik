@@ -3,11 +3,13 @@ import { AnimatedCounter, WordReveal } from "./motion";
 import { GlassLink } from "./GlassLink";
 import { ProductCollection } from "./ProductCollection";
 import { OrgModal } from "./OrgModal";
+import { RecapCard } from "./RecapCard";
+import { AskaPromo } from "./AskaPromo";
 import { Faq } from "./Faq";
-import { FABRIC_TEXTURE, InnerBorder, KawungRing, MegaWave, ParangCorner } from "./ornaments";
+import { FABRIC_TEXTURE, InnerBorder, ParangCorner } from "./ornaments";
 import { formatRupiah, waLink, WA_NUMBER } from "@/lib/format";
 import type { Product } from "@/types";
-import { FaArrowRight, FaArrowRightLong, FaBookOpen, FaCheck, FaGraduationCap, FaLifeRing, FaLocationDot, FaMagnifyingGlass, FaPhone, FaRobot, FaWhatsapp } from "react-icons/fa6";
+import { FaArrowRight, FaArrowRightLong, FaBookOpen, FaCheck, FaGraduationCap, FaLifeRing, FaMagnifyingGlass } from "react-icons/fa6";
 
 const TAGS_A = ["Kompor listrik", "Canting listrik", "Kompor cap", "Pewarna alami", "Kain mori"];
 
@@ -74,30 +76,8 @@ export function AboutPanel({ products }: { products: Product[] }) {
           </div>
         </div>
 
-        {/* Kartu 2: Tanya ASKA */}
-        <div className="relative h-[clamp(240px,32vh,280px)] overflow-hidden rounded-3xl border border-[#d4af37]/35 bg-gradient-to-b from-[#3d2a1c] via-[#31221a] to-[#261a11] p-5 text-white shadow-[0_18px_40px_-14px_rgba(38,26,17,.7),inset_0_1px_0_rgba(255,255,255,.12)]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_70%_at_50%_0%,rgba(212,175,55,.14),transparent_60%)]" aria-hidden />
-          <div className="pointer-events-none absolute inset-0 opacity-[.07] mix-blend-screen" style={FABRIC_TEXTURE} aria-hidden />
-          <MegaWave className="-bottom-2 -left-2 h-32 w-48 opacity-35" />
-          <InnerBorder />
-
-          <div className="relative size-full">
-            <div className="absolute right-0 top-0 size-14">
-              <KawungRing className="inset-0 size-full" />
-              <span className="absolute inset-[9px] grid place-items-center rounded-full border border-[#d4af37]/60 bg-[#25170c] text-[#f0cf8a] shadow-lg">
-                <FaRobot className="size-5" aria-hidden />
-              </span>
-            </div>
-            <div className="absolute left-0 top-0 w-40 rounded-2xl bg-white/10 p-3 ring-1 ring-[#d4af37]/25 backdrop-blur">
-              <p className="rounded-lg bg-white/10 px-2 py-1.5 text-[11px]">Suhu tidak stabil, apa yang harus saya lakukan?</p>
-              <p className="mt-1.5 rounded-lg bg-hm-gold px-2 py-1.5 text-[11px] text-hm-deep">Cek dulu kabel dan stop kontak…</p>
-            </div>
-            <div className="absolute inset-x-0 bottom-0">
-              <p className="text-[15px] leading-tight tracking-tight xl:text-lg">Tanya ASKA, Asisten yang paham</p>
-              <span className="mt-1 inline-block rounded-md bg-hm-gold px-2 py-0.5 text-[15px] leading-tight tracking-tight text-black xl:text-lg">Produk yang anda pakai</span>
-            </div>
-          </div>
-        </div>
+        {/* Kartu 2: promo chatbot ASKA (kartu kaca) */}
+        <AskaPromo />
       </div>
     </div>
   );
@@ -259,12 +239,13 @@ export function ProductShelf({ products }: { products: Product[] }) {
   );
 }
 
-const EVENTS = [
+const EVENTS: { kicker: string; t: string; d: string; note: string; bg: string; href?: string }[] = [
   {
     kicker: "Program tahunan",
     t: "Batik Merdeka",
     d: "Program tahunan Astoetik bersama komunitas.",
-    note: "Informasi jadwal dan pendaftaran segera hadir.",
+    note: "Daftar sekarang lewat formulir.",
+    href: "https://docs.google.com/forms/d/e/1FAIpQLSfub6eq5xGAsSm0SLELT-Cem7vIzgmAFqogLeuq38ZacU-0Hw/viewform?usp=publish-editor",
     bg: "from-[#e08a2e] via-[#c9573a] to-[#a03a46]",
   },
   {
@@ -278,7 +259,8 @@ const EVENTS = [
     kicker: "Artikel",
     t: "Blog & Majalah",
     d: "Artikel, tips, dan majalah digital seputar batik.",
-    note: "Tulisan dan majalah digital segera hadir.",
+    note: "Baca artikel dan majalah digital.",
+    href: "https://www.astoetik.com/majalah/",
     bg: "from-[#d6a642] via-[#b9843a] to-[#8c5a2f]",
   },
 ];
@@ -287,15 +269,20 @@ export function EventsCta() {
   return (
     <section id="event" className="flex min-h-screen w-full items-center bg-gradient-to-b from-white to-hm-gold/40 py-20">
       <div className={wrapW}>
-        <div className="mb-10 flex items-end justify-between">
+        <div className="mb-10">
           <h2 className={h2}>Event & Partner</h2>
-          <span className="text-sm text-hm-muted">Konten segera hadir</span>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {EVENTS.map((e) => (
-            <div
+          {EVENTS.map((e) => {
+            if (e.t === "Event Recap") {
+              return <RecapCard key={e.t} bg={`bg-gradient-to-br ${e.bg}`} className="relative flex min-h-[280px] flex-col overflow-hidden rounded-3xl p-7 text-white shadow-[0_16px_40px_-18px_rgba(62,36,20,.45)]" />;
+            }
+            const Card = e.href ? "a" : "div";
+            return (
+            <Card
               key={e.t}
-              className={`relative flex min-h-[280px] flex-col overflow-hidden rounded-3xl bg-gradient-to-br ${e.bg} p-7 text-white shadow-[0_16px_40px_-18px_rgba(62,36,20,.45)]`}
+              {...(e.href ? { href: e.href, target: "_blank", rel: "noopener noreferrer", "aria-label": e.t } : {})}
+              className={`${e.href ? "transition hover:-translate-y-1 " : ""}relative flex min-h-[280px] flex-col overflow-hidden rounded-3xl bg-gradient-to-br ${e.bg} p-7 text-white shadow-[0_16px_40px_-18px_rgba(62,36,20,.45)]`}
             >
               <span aria-hidden className="pointer-events-none absolute -right-14 -top-14 size-56 rounded-full bg-white/15" />
               <span aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-64 rounded-[50%] bg-white/10" />
@@ -306,8 +293,9 @@ export function EventsCta() {
                 <p className="max-w-[12rem] text-xs leading-snug text-white/70">{e.note}</p>
                 <FaArrowRightLong className="size-7 shrink-0 text-white/90" aria-hidden />
               </div>
-            </div>
-          ))}
+            </Card>
+            );
+          })}
         </div>
 
         <div className="mx-auto mt-24 max-w-2xl text-center">
@@ -324,41 +312,59 @@ export function EventsCta() {
   );
 }
 
+const MARKETPLACE_LINKS: [string, string][] = [
+  ["Shopee", "https://shopee.co.id/astoetikbatik"],
+  ["Toko Pedia", "https://www.tokopedia.com/astoetikcoid?srsltid=AfmBOorZrGRTDha6ZKqWn1NeqOZS-PJUDWfjTGvrizyZSZo_vkq7ZpSL"],
+  ["BukaLapak", "https://www.bukalapak.com/u/batikastoetik?from=omnisearch&from_keyword_history=false&search_source=omnisearch_user&source=navbar"],
+  ["Mbizmarket", "https://www.mbizmarket.co.id/p/astoetikbatik"],
+  ["BliBli.com", "https://www.blibli.com/merchant/ikm-astoetik-store/IKA-60031?pickupPointCode=ALL_LOCATIONS"],
+  ["SIPLah blibli.com", "https://siplah.blibli.com/merchant-detail/SAST-0025?itemPerPage=40&page=0&merchantId=SAST-0025"],
+  ["LKPP ecatalogue", "https://e-katalog.lkpp.go.id/id/search-produk?authenticityToken=c07d364698dd96a0dc86eeb36d375ad0257e80e3&q=astoetik&pid=429291&mid=&sni=-99&gt=&lt="],
+  ["SIPLah toko ladang", "https://siplah.tokoladang.co.id/m/astoetik-store.26442?page=1&etalase=&keyword="],
+  ["Kartara", "https://karyanoesantara.id/toko/Astoetik"],
+];
+
+const SOCIAL_LINKS: [string, string][] = [
+  ["Facebook", "https://web.facebook.com/astoetikbatik?_rdc=1&_rdr#"],
+  ["Whatsapp", "https://api.whatsapp.com/send?phone=6281325131111"],
+  ["Instagram", "https://www.instagram.com/astoetik/"],
+  ["Youtube", "https://www.youtube.com/watch?v=OSjm9W4uRXM"],
+];
+
 export function Footer() {
   return (
     <footer className="w-full bg-hm-dark text-white">
       <div className="w-full px-4 py-8 md:px-6 md:py-10">
         <Faq />
-        <div className="mt-8 grid gap-8 md:grid-cols-[1.4fr_2fr] md:gap-12">
-          <div>
-            <p className="font-display text-2xl font-semibold tracking-[0.14em]">ASTOETIK</p>
-            <p className="mt-2 max-w-sm text-sm text-white/70">
-              Astoetik memperluas pengalaman dari produk fisik menuju panduan, bantuan, layanan, dan wawasan digital yang terhubung.
-            </p>
-            <a href="#tentang" className="mt-3 inline-block text-sm underline underline-offset-4">
-              Tentang kami
-            </a>
-            <div className="mt-4 flex gap-3">
-              <a href={waLink(WA_NUMBER, "Halo Astoetik")} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="grid size-10 place-items-center rounded-full bg-white text-hm-dark">
-                <FaWhatsapp className="size-4" />
-              </a>
+        <div className="mt-8 grid gap-8 md:grid-cols-[1.4fr_2fr_0.7fr] md:gap-12">
+          <div className="space-y-3 text-sm text-white/80">
+            <div className="flex items-center gap-3">
+              <Image src="/home/logo-astoetik.png" alt="Logo Astoetik" width={563} height={278} className="h-12 w-auto" />
+              <p className="font-display text-2xl font-semibold tracking-[0.14em] text-white">ASTOETIK</p>
             </div>
+            <p>Kantor CV. Astoetik</p>
+            <p>Jalan Lestari RT. 02, Jeblog, Tirtonirmolo, Kasihan, Bantul, Daerah Istimewa Yogyakarta</p>
+            <p>Waktu Operasional</p>
+            <p>Senin - Sabtu, 08.00 WIB - 16.00 WIB</p>
           </div>
-          <div className="grid gap-6 text-sm sm:grid-cols-2">
-            <nav aria-label="Footer" className="space-y-1.5 text-white/80">
-              {[["#tentang", "Tentang"], ["#produk", "Produk"], ["#panduan", "Smart Guide"], ["#aska", "ASKA-AI"], ["#event", "Event & Partner"]].map(([h, l]) => (
-                <a key={h} href={h} className="block hover:text-white">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider">Marketplace</p>
+            <div className="mt-3 grid gap-x-6 gap-y-2 text-sm text-white/80 sm:grid-cols-2">
+              {MARKETPLACE_LINKS.map(([l, h]) => (
+                <a key={l} href={h} target="_blank" rel="noopener noreferrer" className="hover:text-white">
                   {l}
                 </a>
               ))}
-            </nav>
-            <div className="space-y-2 text-white/80">
-              <p className="flex items-center gap-2">
-                <FaPhone className="size-4" aria-hidden /> +{WA_NUMBER}
-              </p>
-              <p className="flex items-start gap-2">
-                <FaLocationDot className="mt-0.5 size-4 shrink-0" aria-hidden /> Jeblog, Tirtonirmolo, Kasihan, Bantul, DIY
-              </p>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider">Follow Us</p>
+            <div className="mt-3 space-y-2 text-sm text-white/80">
+              {SOCIAL_LINKS.map(([l, h]) => (
+                <a key={l} href={h} target="_blank" rel="noopener noreferrer" className="block hover:text-white">
+                  {l}
+                </a>
+              ))}
             </div>
           </div>
         </div>
