@@ -20,10 +20,28 @@ const CATEGORY_LABEL: Record<ProductCategory, string> = {
   canting: "Canting",
 };
 
+const EXTERNAL_CATEGORIES = [
+  "Pelatihan Batik",
+  "Paket Membatik",
+  "Mesin Batik CNC",
+  "Wajan & Loyang",
+  "Pewarna Sintetis",
+  "Pewarna Alami",
+  "Kain",
+  "Alat Bantu",
+  "Perlengkapan Produksi",
+  "Alat Pengolah Limbah",
+  "Malam",
+  "Paket Mencanting",
+  "Servis Produk",
+  "Layanan Jasa",
+  "Sertifikasi Uji Kompetensi BNSP",
+];
+
 /** Kartu kaca (glossy) di atas latar krem. */
 function Card({ p }: { p: Product }) {
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl bg-gradient-to-br from-white/95 via-white/80 to-white/60 p-2 shadow md:p-3-[0_1px_2px_rgba(62,36,20,.05),0_8px_24px_-8px_rgba(62,36,20,.14),0_24px_48px_-24px_rgba(62,36,20,.16),inset_0_1px_0_rgba(255,255,255,1)] ring-1 ring-white/90 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(62,36,20,.06),0_14px_32px_-10px_rgba(62,36,20,.18),0_32px_56px_-26px_rgba(62,36,20,.2),inset_0_1px_0_rgba(255,255,255,1)]">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl bg-gradient-to-br from-white/95 via-white/80 to-white/60 p-2 md:p-3 shadow-[0_8px_25px_rgba(62,36,20,0.07),0_2px_6px_rgba(62,36,20,0.04),inset_0_1px_0_rgba(255,255,255,1)] ring-1 ring-white/90 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(62,36,20,0.11),0_4px_12px_rgba(62,36,20,0.06),inset_0_1px_0_rgba(255,255,255,1)]">
       <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-white/50 to-transparent" />
 
       <Link href={`/p/${p.code}`} aria-label={p.name} className="relative block aspect-[5/4] min-h-0 overflow-hidden rounded-2xl bg-white/70 md:aspect-auto md:flex-1">
@@ -83,10 +101,15 @@ export function ProductCollection({ products }: { products: Product[] }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div role="tablist" aria-label="Kategori produk" className="mb-3 flex flex-wrap justify-center gap-1.5 md:mb-5 md:gap-2">
+      <div
+        role="tablist"
+        aria-label="Kategori produk"
+        className="mb-2.5 flex flex-wrap justify-center gap-1.5 md:mb-4 md:gap-2 max-h-[105px] md:max-h-none overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-2"
+      >
         {TABS.filter((t) => counts[t.key]).map((t) => (
           <button
             key={t.key}
+            type="button"
             role="tab"
             aria-selected={tab === t.key}
             onClick={() => pick(t.key)}
@@ -98,6 +121,22 @@ export function ProductCollection({ products }: { products: Product[] }) {
             <span className={`ml-1.5 text-[11px] md:ml-2 md:text-xs ${tab === t.key ? "text-hm-gold" : "text-hm-muted"}`}>{counts[t.key]}</span>
           </button>
         ))}
+
+        {EXTERNAL_CATEGORIES.map((cat) => (
+          <a
+            key={cat}
+            href="https://astoetik.co.id/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${cat} (Buka di astoetik.co.id)`}
+            className="group inline-flex items-center gap-1 rounded-full border border-hm-dark/20 bg-white/60 px-3.5 py-1.5 text-xs font-medium text-hm-dark transition duration-300 hover:border-hm-dark hover:bg-white hover:shadow-sm md:px-5 md:py-2 md:text-sm"
+          >
+            <span>{cat}</span>
+            <span className="text-[10px] text-hm-muted transition-colors group-hover:text-hm-dark md:text-xs" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        ))}
       </div>
 
       <div className="flex min-h-0 flex-1 items-center gap-3 md:items-stretch">
@@ -106,7 +145,7 @@ export function ProductCollection({ products }: { products: Product[] }) {
         </button>
         <ul
           ref={track}
-          className="flex h-fit min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-6 pt-2 [scrollbar-width:none] md:h-auto md:gap-6 md:pb-10 md:pt-3 [&::-webkit-scrollbar]:hidden"
+          className="flex h-fit min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-3 pt-2 [scrollbar-width:none] md:h-auto md:gap-6 md:pb-4 md:pt-3 [&::-webkit-scrollbar]:hidden"
         >
           {list.map((p) => (
             <li key={p.code} className="w-[56%] shrink-0 snap-start sm:w-[40%] lg:w-[calc((100%-4.5rem)/4)]">
@@ -117,6 +156,20 @@ export function ProductCollection({ products }: { products: Product[] }) {
         <button type="button" onClick={() => slide(1)} aria-label="Geser ke kanan" className={`${arrow} self-center max-md:hidden`}>
           <FaChevronRight className="size-4" />
         </button>
+      </div>
+
+      {/* CTA Pelayanan Jasa */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 pb-1 md:px-6">
+        <p className="text-sm font-medium text-[#141414] md:text-base">Butuh Pelayanan Jasa?</p>
+        <a
+          href={waLink(WA_NUMBER, "Produk dan teknologi untuk membatik\nHalo ASTOETIK, saya ingin berkonsultasi tentang pelayanan jasa ASTOETIK. Mohon informasi layanan yang tersedia, biaya, dan prosedurnya")}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-emerald-700 md:px-5 md:py-2 md:text-sm"
+        >
+          <FaWhatsapp className="size-3.5 md:size-4" />
+          Konsultasi via WhatsApp
+        </a>
       </div>
     </div>
   );

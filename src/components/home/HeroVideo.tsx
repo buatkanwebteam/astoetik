@@ -55,17 +55,12 @@ function loadApi(): Promise<YTNamespace> {
 // tablets it makes the whole hero (and the scroll after it) stutter. So the live video is only
 // used on desktop-class screens that allow motion and are not on a data saver; everything else
 // gets the video's still frame, which costs nothing per frame.
-const LIVE_QUERY = "(min-width: 1024px) and (prefers-reduced-motion: no-preference)";
-
-function subscribeLive(cb: () => void) {
-  const mq = window.matchMedia(LIVE_QUERY);
-  mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
+function subscribeLive() {
+  return () => {};
 }
 
 function liveSnapshot() {
-  const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-  return window.matchMedia(LIVE_QUERY).matches && !conn?.saveData;
+  return true;
 }
 
 export function HeroVideo({ videoId, start = 0 }: { videoId: string; start?: number }) {
@@ -156,15 +151,6 @@ export function HeroVideo({ videoId, start = 0 }: { videoId: string; start?: num
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      {/* Still frame: what phones and tablets see, and what desktops see until the video is playing. */}
-      {/* eslint-disable-next-line @next/next/no-img-element -- remote YouTube thumbnail, nothing to optimise */}
-      <img
-        src={`https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
-        alt=""
-        decoding="async"
-        fetchPriority="high"
-        className="absolute inset-0 size-full object-cover"
-      />
       {/* Diperbesar dari tengah; navbar blur menutupi sisa logo di kiri atas video. */}
       <div
         ref={host}

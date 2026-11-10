@@ -6,7 +6,7 @@ import { useState } from "react";
 import { WordReveal } from "./motion";
 import { GlassLink } from "./GlassLink";
 import { HeroVideo } from "./HeroVideo";import { Glass } from "glisse";
-import { FaBars, FaCommentDots, FaXmark } from "react-icons/fa6";
+import { FaBars, FaXmark } from "react-icons/fa6";
 
 export const NAV = [
   { href: "#tentang", label: "Tentang" },
@@ -30,7 +30,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-hm-deep/15" />
 
       <div className="relative z-10 flex min-h-screen w-full flex-col px-4 md:px-6">
-        <header className="relative z-30 -mx-4 grid h-20 grid-cols-[1fr_auto_1fr] items-center border-b border-white/10 bg-hm-deep/55 px-4 md:-mx-6 md:px-6">
+        <header className="relative z-30 -mx-4 grid h-20 grid-cols-[1fr_auto_1fr] items-center border-b border-white/10 bg-hm-deep/40 backdrop-blur-xl px-4 md:-mx-6 md:px-6">
           <Link href="/" aria-label="Astoetik, beranda" className="justify-self-start">
             <Image src="/home/logo-astoetik.png" alt="Astoetik" width={563} height={278} priority className="h-12 w-auto transition duration-300 hover:scale-105" />
           </Link>
@@ -89,25 +89,6 @@ export function Hero() {
               <GlassLink href="#produk">Jelajahi produk</GlassLink>
             </div>
           </div>
-          <Glass className="w-full max-w-[340px] rounded-3xl p-5 text-white">
-            <div className="flex items-start gap-3">
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white/20 ring-1 ring-white/40">
-                <FaCommentDots className="size-5" aria-hidden />
-              </span>
-              <div>
-                <p className="flex items-center gap-2 text-base font-medium">
-                  Ada chatbot ASKA
-                  <span className="size-2 rounded-full bg-emerald-300" aria-hidden />
-                </p>
-                <p className="mt-1 text-sm leading-snug text-white/85">
-                  Tanya cara pakai, perawatan, dan kendala produk langsung di halaman tiap produk.
-                </p>
-              </div>
-            </div>
-            <div className="mt-4">
-              <GlassLink href="#produk">Coba sekarang</GlassLink>
-            </div>
-          </Glass>
         </div>
       </div>
     </section>

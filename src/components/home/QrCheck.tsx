@@ -162,7 +162,7 @@ export function QrCheck({ products }: { products: ChatProduct[] }) {
                 ariaLabel="Model produk"
                 value={code}
                 onChange={setCode}
-                options={products.map((p) => ({ value: p.code, label: `${p.code} - ${p.name}` }))}
+                options={products.map((p) => ({ value: p.code, label: `${p.name} - ${p.code}` }))}
               />
             </div>
           </label>
