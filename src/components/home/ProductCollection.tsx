@@ -34,7 +34,6 @@ const EXTERNAL_CATEGORIES = [
   "Malam",
   "Paket Mencanting",
   "Servis Produk",
-  "Layanan Jasa",
   "Sertifikasi Uji Kompetensi BNSP",
 ];
 
@@ -104,7 +103,7 @@ export function ProductCollection({ products }: { products: Product[] }) {
       <div
         role="tablist"
         aria-label="Kategori produk"
-        className="mb-2.5 flex flex-wrap justify-center gap-1.5 md:mb-4 md:gap-2 max-h-[105px] md:max-h-none overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-2"
+        className="mb-3 flex flex-wrap justify-center gap-1.5 md:mb-4 md:gap-2 px-1"
       >
         {TABS.filter((t) => counts[t.key]).map((t) => (
           <button
@@ -113,7 +112,7 @@ export function ProductCollection({ products }: { products: Product[] }) {
             role="tab"
             aria-selected={tab === t.key}
             onClick={() => pick(t.key)}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition duration-300 md:px-5 md:py-2 md:text-sm ${
+            className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition duration-300 md:px-5 md:py-2 md:text-sm ${
               tab === t.key ? "border-hm-dark bg-hm-dark text-white shadow-md" : "border-hm-dark/20 bg-white/60 text-hm-dark hover:bg-white"
             }`}
           >
@@ -129,7 +128,7 @@ export function ProductCollection({ products }: { products: Product[] }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${cat} (Buka di astoetik.co.id)`}
-            className="group inline-flex items-center gap-1 rounded-full border border-hm-dark/20 bg-white/60 px-3.5 py-1.5 text-xs font-medium text-hm-dark transition duration-300 hover:border-hm-dark hover:bg-white hover:shadow-sm md:px-5 md:py-2 md:text-sm"
+            className="group inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-hm-dark/20 bg-white/60 px-3 py-1.5 text-xs font-medium text-hm-dark transition duration-300 hover:border-hm-dark hover:bg-white hover:shadow-sm md:px-5 md:py-2 md:text-sm"
           >
             <span>{cat}</span>
             <span className="text-[10px] text-hm-muted transition-colors group-hover:text-hm-dark md:text-xs" aria-hidden="true">
